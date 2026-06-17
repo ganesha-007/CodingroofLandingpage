@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/smoothscroll.tsx","./src/components/ui/blur-fade.tsx","./src/components/ui/button.tsx","./src/contexts/authcontext.tsx","./src/lib/utils.ts","./src/pages/landingpage.tsx","./landingpage (4).tsx"],"version":"5.9.3"}

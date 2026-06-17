@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" fill="none">
+  <rect width="800" height="800" rx="24" fill="#fafafa"/>
+  <circle cx="400" cy="320" r="120" fill="#e5e5e5"/>
+  <path d="M220 520 C220 420, 320 380, 400 460 C480 380, 580 420, 580 520 Z" fill="#171717" opacity="0.85"/>
+  <text x="400" y="700" text-anchor="middle" fill="#737373" font-family="Inter, sans-serif" font-size="28">Loved by teams</text>
+</svg>
