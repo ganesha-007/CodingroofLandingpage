@@ -1,87 +1,23 @@
-import roiIllustration from "@/assets/ROI_photo.png";
-import lovedIllustration from "@/assets/middle_one.png";
 import callIllustration from "@/assets/cr-illustration-call.png";
 import logo from "@/assets/logo.webp";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Banknote, BarChart3, Check, Cloud, Code2, Compass, CreditCard, Database, Factory, GraduationCap, Heart, Layers, LineChart, Menu, Minus, Plus, Quote, Rocket, ShieldCheck, ShoppingCart, Sparkles, Truck, Users, X, Zap } from "lucide-react";
+import { ArrowRight, Banknote, BarChart3, Check, Cloud, Compass, CreditCard, Database, Factory, GraduationCap, Heart, Layers, LineChart, Menu, Rocket, ShieldCheck, ShoppingCart, Sparkles, Truck, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { motion, type MotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { BlurFade } from "@/components/ui/blur-fade";
+import { Hero } from "@/components/Hero";
+import { SuiteSection } from "@/components/SuiteSection";
+import { RoiSection } from "@/components/RoiSection";
+import { LovedSection } from "@/components/LovedSection";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
+import { CapabilitiesSection } from "@/components/CapabilitiesSection";
+import { StudioSection } from "@/components/StudioSection";
+import { FaqSection } from "@/components/FaqSection";
 import { useLenis } from "lenis/react";
-
-
-// ===== Hero =====
-const Hero = () => (
-  <section className="relative overflow-hidden border-b border-border bg-background">
-    {/* ambient backdrop */}
-    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-      <div
-        className="absolute inset-x-0 top-0 h-[70vh]"
-        style={{
-          background:
-            "radial-gradient(ellipse 75% 55% at 50% -10%, hsl(var(--foreground) / 0.045), transparent 70%)",
-        }}
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "radial-gradient(hsl(var(--foreground) / 0.05) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 65% 50% at 50% 0%, black 20%, transparent 72%)",
-          maskImage:
-            "radial-gradient(ellipse 65% 50% at 50% 0%, black 20%, transparent 72%)",
-        }}
-      />
-    </div>
-
-    <div className="mx-auto max-w-5xl px-6 pt-28 md:pt-40 pb-28 md:pb-36 text-center">
-      <BlurFade delay={0}>
-        <h1 className="text-[clamp(2.35rem,6.5vw,4.85rem)] font-bold leading-[1.08] tracking-[-0.045em] text-foreground text-balance">
-          <span className="block">Build faster. Scale calmer.</span>
-          <span className="block mt-1 md:mt-2 text-foreground/38 font-semibold">
-            Operate with confidence.
-          </span>
-        </h1>
-      </BlurFade>
-
-      <BlurFade delay={0.08} className="mt-7 md:mt-8">
-        <p className="mx-auto max-w-2xl text-base md:text-[1.125rem] text-muted-foreground leading-[1.75] text-pretty">
-          We design, build, and operate systems that support critical operations —
-          reliably, securely, and at scale.
-        </p>
-      </BlurFade>
-
-      <BlurFade delay={0.16} className="mt-10 flex flex-wrap justify-center gap-3">
-        <Button asChild size="lg" className="rounded-md h-12 px-7 text-sm font-medium gap-1.5 shadow-sm">
-          <a href="#work">View work <ArrowRight className="h-3.5 w-3.5" /></a>
-        </Button>
-        <Button asChild size="lg" variant="outline" className="rounded-md h-12 px-7 text-sm font-medium bg-background/80 backdrop-blur-sm">
-          <Link to="/login">Start a conversation</Link>
-        </Button>
-      </BlurFade>
-
-      <BlurFade delay={0.24} className="mt-8 flex flex-wrap items-center justify-center gap-2">
-        {["Built for reliability", "Designed for scale", "Used across industries"].map((label) => (
-          <span
-            key={label}
-            className="rounded-full border border-border/70 bg-background/60 px-3.5 py-1.5 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground"
-          >
-            {label}
-          </span>
-        ))}
-      </BlurFade>
-    </div>
-  </section>
-);
-
-// ===== Navbar =====
 const links = [
   { href: "#services", label: "Services" },
-  { href: "#process", label: "Process" },
   { href: "#work", label: "Work" },
   { href: "#industries", label: "Industries" },
   { href: "#pricing", label: "Pricing" },
@@ -527,40 +463,11 @@ const ScrollProgress = () => {
 };
 
 // ===== LandingPage =====
-const services = [
-  { icon: Cloud, title: "Custom SaaS development", desc: "End-to-end web platforms — auth, billing, dashboards, integrations — built on a modern, scalable stack." },
-  { icon: LineChart, title: "Growth engineering", desc: "Analytics, A/B testing and conversion tooling so every release is tied to a number that matters." },
-  { icon: Users, title: "Dedicated product pods", desc: "Designers, engineers and a PM working as an extension of your team — no agency hand-offs." },
-  { icon: ShieldCheck, title: "Enterprise-ready foundations", desc: "Security, compliance and observability baked in from day one, so you can sell to bigger customers." },
-  { icon: Sparkles, title: "AI features & automation", desc: "Embed intelligence into your product — copilots, smart workflows, content generation, and beyond." },
-  { icon: Layers, title: "Legacy modernization", desc: "Migrate creaking internal tools into modern SaaS that your team and customers actually love using." },
-];
-
-const process = [
-  { icon: Compass, title: "Discover & strategize", desc: "We map your business goals, users and revenue model — then scope a SaaS that drives measurable ROI.", headerBg: "bg-amber-200", cardBg: "bg-amber-50", border: "border-amber-200/60" },
-  { icon: Code2, title: "Design & build", desc: "Our engineering pod ships production-grade software in weekly sprints — clean code, modern stack, your IP.", headerBg: "bg-blue-200", cardBg: "bg-blue-50", border: "border-blue-200/60" },
-  { icon: Rocket, title: "Launch & scale", desc: "We ship to production, monitor performance and iterate on what moves the metrics that matter.", headerBg: "bg-emerald-200", cardBg: "bg-emerald-50", border: "border-emerald-200/60" },
-];
-
 const stats = [
   { stat: "3.4×", label: "Avg. ROI within 12 months" },
   { stat: "12+", label: "SaaS Products" },
   { stat: "14+", label: "Countries served" },
   { stat: "6 wks", label: "From kickoff to MVP" },
-];
-
-const testimonials = [
-  { quote: "CodingRoof rebuilt our internal billing tool as a SaaS in 8 weeks. Revenue from it tripled in the next quarter.", name: "Priya N.", role: "COO, Fintech scale-up" },
-  { quote: "They felt like part of our team. Pragmatic, fast, and the code quality is the cleanest we've ever inherited.", name: "Marcus L.", role: "CTO, Logistics SaaS" },
-  { quote: "We went from concept to paying customers in under three months. Couldn't have done it without them.", name: "Sara K.", role: "Founder, HealthTech" },
-];
-
-const faqs = [
-  { q: "How do you charge for projects?", a: "Most engagements are fixed-scope sprints with a clear deliverable, or monthly product pods for ongoing work. We share a transparent quote after the discovery call." },
-  { q: "Do we own the code and IP?", a: "Yes — 100%. Everything is delivered into your repository under your name, with full documentation and handover support." },
-  { q: "What stack do you build on?", a: "TypeScript, React, Node, Postgres, and modern cloud infra (AWS, GCP, or managed platforms). We pick the boring, proven tools that scale." },
-  { q: "Can you take over an existing product?", a: "Absolutely. We routinely audit, stabilize and modernize existing codebases before adding new capabilities on top." },
-  { q: "How quickly can we start?", a: "Usually within 1–2 weeks of the discovery call, depending on team availability. Urgent projects can sometimes start sooner." },
 ];
 
 const industries = [
@@ -650,16 +557,9 @@ const engagements = [
   },
 ];
 
-const insights = [
-  { tag: "Playbook", title: "How we ship a SaaS MVP in 6 weeks (and what we cut)", time: "8 min read" },
-  { tag: "Engineering", title: "Boring tech wins: our 2026 production stack", time: "6 min read" },
-  { tag: "Growth", title: "Instrumenting ROI from day one — the metrics we always track", time: "5 min read" },
-];
-
 const LandingPage = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   useEffect(() => {
     if (!loading && user) navigate("/dashboard", { replace: true });
@@ -683,141 +583,11 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Divider into tinted band: Services + Process */}
-      <SectionDivider direction="down" from="#ffffff" to="#f5f5f4" />
-      <div className="bg-[#f5f5f4]">
+      <SuiteSection />
 
-      {/* Services grid */}
-      <Section
-        className="pt-14 pb-20"
-        eyebrow="What we do"
-        title={<span id="services">Services built around your business outcomes.</span>}
-        description="Every engagement is scoped to a real metric — revenue, retention, activation, cost saved. Not lines of code shipped."
-      >
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {services.map((s, i) => (
-            <BlurFade key={s.title} delay={0.04 * i} inView>
-              <div className="bg-white rounded-xl border border-border h-full p-6 hover:border-foreground/30 transition-colors">
-                <div className="w-9 h-9 rounded-md bg-neutral-100 flex items-center justify-center mb-5">
-                  <s.icon className="w-[18px] h-[18px] text-foreground" />
-                </div>
-                <h3 className="text-base font-semibold tracking-[-0.02em] mb-1.5">{s.title}</h3>
-                <p className="text-[15px] text-muted-foreground leading-relaxed">{s.desc}</p>
-              </div>
-            </BlurFade>
-          ))}
-        </div>
-      </Section>
+      <RoiSection />
+      <LovedSection />
 
-      {/* Process */}
-      <Section
-        className="pt-6 pb-20"
-        eyebrow="How we work"
-        title={<span id="process">Three steps. From idea to revenue.</span>}
-      >
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
-          {process.map((item, i) => (
-            <BlurFade key={item.title} delay={0.05 * i} inView>
-              <div className={`${item.cardBg} rounded-xl border ${item.border} h-full flex flex-col overflow-hidden`}>
-                <div className={`${item.headerBg} h-16 relative`}>
-                  <div className="absolute -bottom-5 left-6 w-10 h-10 rounded-lg bg-white border border-border/40 flex items-center justify-center shadow-sm">
-                    <item.icon className="w-[18px] h-[18px] text-foreground" />
-                  </div>
-                </div>
-                <div className={`${item.cardBg} p-7 pt-9 flex-1`}>
-                  <h3 className="text-lg font-semibold tracking-[-0.02em] mb-2">{item.title}</h3>
-                  <p className="text-[15px] text-muted-foreground leading-relaxed">{item.desc}</p>
-                </div>
-              </div>
-            </BlurFade>
-          ))}
-        </div>
-      </Section>
-
-      </div>
-      {/* Divider back to white: ROI + Build */}
-      <SectionDivider direction="up" from="#f5f5f4" to="#ffffff" />
-      <div className="bg-white">
-
-      {/* ROI alternating section */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
-        <div className="bg-neutral-100 rounded-2xl p-10 md:p-14 flex flex-col-reverse md:flex-row md:items-center gap-10 md:gap-12">
-          <div className="flex-1 mix-blend-multiply">
-            <img src={roiIllustration} alt="ROI growth illustration" className="w-full h-auto" />
-          </div>
-          <div className="flex-1">
-            <BlurFade delay={0} inView>
-              <p className="text-sm font-medium text-muted-foreground mb-3">Built for ROI</p>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-[-0.04em] leading-[1.05]">
-                Software that earns its keep.
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground leading-relaxed max-w-md">
-                We instrument every product we ship so the impact is visible — conversions tracked, revenue attributed, costs saved. No guesswork.
-              </p>
-              <div className="mt-8 grid grid-cols-2 gap-6">
-                {stats.map((s) => (
-                  <div key={s.label}>
-                    <div className="text-3xl font-bold tracking-[-0.04em]">{s.stat}</div>
-                    <div className="mt-1 text-sm text-muted-foreground leading-snug">{s.label}</div>
-                  </div>
-                ))}
-              </div>
-            </BlurFade>
-          </div>
-        </div>
-      </section>
-
-      {/* Designed to be loved — alternating section under ROI */}
-      <section className="mx-auto max-w-5xl px-6 pb-20">
-        <div className="bg-neutral-100 rounded-2xl p-10 md:p-14 flex flex-col md:flex-row md:items-center gap-10 md:gap-12">
-          <div className="flex-1">
-            <BlurFade delay={0} inView>
-              <p className="text-sm font-medium text-muted-foreground mb-3">Designed to be loved</p>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-[-0.04em] leading-[1.05]">
-                Products people actually want to open.
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground leading-relaxed max-w-md">
-                Great ROI starts with retention. We obsess over the small moments — the first 30 seconds, the empty states, the micro-interactions — so your users keep coming back without being nudged.
-              </p>
-              <div className="mt-8 grid grid-cols-2 gap-6">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Heart className="h-4 w-4 text-foreground" />
-                    <div className="text-3xl font-bold tracking-[-0.04em]">62</div>
-                  </div>
-                  <div className="mt-1 text-sm text-muted-foreground leading-snug">Avg. NPS across shipped products</div>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-foreground" />
-                    <div className="text-3xl font-bold tracking-[-0.04em]">&lt;1.5s</div>
-                  </div>
-                  <div className="mt-1 text-sm text-muted-foreground leading-snug">LCP — buttery on every device</div>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-foreground" />
-                    <div className="text-3xl font-bold tracking-[-0.04em]">3×</div>
-                  </div>
-                  <div className="mt-1 text-sm text-muted-foreground leading-snug">Retention vs. industry baseline</div>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-foreground" />
-                    <div className="text-3xl font-bold tracking-[-0.04em]">AA</div>
-                  </div>
-                  <div className="mt-1 text-sm text-muted-foreground leading-snug">WCAG 2.2 — accessible by default</div>
-                </div>
-              </div>
-            </BlurFade>
-          </div>
-          <div className="flex-1 mix-blend-multiply">
-            <img src={lovedIllustration} alt="People loving the product illustration" loading="lazy" width={1024} height={1024} className="w-full h-auto" />
-          </div>
-        </div>
-      </section>
-
-      </div>
       {/* Divider into tinted band: Global reach */}
       <SectionDivider direction="down" from="#ffffff" to="#f5f5f4" />
       <div className="bg-[#f5f5f4]">
@@ -921,28 +691,10 @@ const LandingPage = () => {
       </section>
 
       </div>
-      {/* Divider back to white: Testimonials + Industries */}
-      <SectionDivider direction="up" from="#f5f5f4" to="#ffffff" />
+
+      <TestimonialsSection />
+
       <div className="bg-white">
-
-      {/* Testimonials */}
-      <Section className="pt-20 pb-16" eyebrow="What clients say" title="Quietly proud of the words below.">
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-5">
-          {testimonials.map((t, i) => (
-            <BlurFade key={t.name} delay={0.05 * i} inView>
-              <figure className="bg-white rounded-xl border border-border p-6 h-full flex flex-col">
-                <Quote className="w-4 h-4 text-foreground/40 mb-3" />
-                <blockquote className="text-[15px] text-foreground leading-relaxed flex-1">"{t.quote}"</blockquote>
-                <figcaption className="mt-5 pt-5 border-t border-border">
-                  <div className="text-sm font-semibold tracking-[-0.02em]">{t.name}</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">{t.role}</div>
-                </figcaption>
-              </figure>
-            </BlurFade>
-          ))}
-        </div>
-      </Section>
-
       {/* Industries — hand-drawn + swipeable */}
       <section id="industries" className="relative pt-10 pb-24 overflow-hidden">
         <div className="mx-auto max-w-6xl px-6">
@@ -1029,105 +781,15 @@ const LandingPage = () => {
       </section>
 
       </div>
-      {/* Divider into tinted band: Tech stack + Case study */}
-      <SectionDivider direction="down" from="#ffffff" to="#f5f5f4" />
-      <div className="bg-[#f5f5f4]">
-
-      {/* Systems we build */}
-      <section className="mx-auto max-w-[1180px] px-6 pt-32 md:pt-40 pb-32 md:pb-40">
-        <div className="max-w-3xl">
-          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            Capabilities
-          </p>
-          <h2 className="mt-5 text-4xl md:text-5xl font-bold tracking-[-0.05em] leading-[1.02] text-foreground">
-            Systems we <span className="relative inline-block">build
-              <svg aria-hidden viewBox="0 0 220 14" className="absolute left-0 -bottom-2 w-full h-3 text-amber-300" preserveAspectRatio="none">
-                <path d="M2 9 C 60 2, 130 14, 218 5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
-              </svg>
-            </span>.
-          </h2>
-          <p className="mt-7 max-w-[640px] text-[16px] md:text-[17px] text-muted-foreground leading-[1.65]">
-            Engineered for real-world operations — where reliability, performance,
-            and scale are not optional.
-          </p>
-        </div>
-
-        <div className="mt-24 md:mt-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16 md:gap-y-20">
-          {[
-            { title: "Internal Platforms", desc: "Systems that coordinate operations, workflows, and internal processes across teams." },
-            { title: "Customer Applications", desc: "High-performance products designed for real users, usage spikes, and long-term growth." },
-            { title: "Automation Systems", desc: "Event-driven systems that reduce manual work and ensure consistency at scale." },
-            { title: "Payment Infrastructure", desc: "Secure transaction systems built for reliability, compliance, and financial accuracy." },
-            { title: "Data & Analytics Systems", desc: "Pipelines and reporting layers that turn raw data into operational intelligence." },
-            { title: "AI-driven Workflows", desc: "Intelligent systems that enhance decision-making and automate complex processes." },
-          ].map((item, i) => (
-            <BlurFade key={item.title} delay={0.04 * i} inView>
-              <div className="group transition-transform duration-300 ease-out hover:-translate-y-[3px]">
-                <h3 className="text-[17px] font-semibold tracking-[-0.02em] text-foreground">
-                  <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat transition-[background-size] duration-300 group-hover:bg-[length:100%_1px]">
-                    {item.title}
-                  </span>
-                </h3>
-                <p className="mt-2.5 text-[14.5px] text-muted-foreground leading-[1.65] max-w-[340px]">
-                  {item.desc}
-                </p>
-              </div>
-            </BlurFade>
-          ))}
-        </div>
-      </section>
-
-      </div>
-      {/* Divider back to white: Why us through Final CTA */}
-      <SectionDivider direction="up" from="#f5f5f4" to="#ffffff" />
+      <CapabilitiesSection />
       <div className="bg-white">
 
       {/* Principles — sticky-left manifesto */}
       <PrinciplesSection />
 
-      {/* Insights / blog teaser */}
-      <Section className="pt-10 pb-20" eyebrow="From the studio" title="Notes, playbooks & engineering reads.">
-        <div className="mt-10 grid md:grid-cols-3 gap-5">
-          {insights.map((p, i) => (
-            <BlurFade key={p.title} delay={0.05 * i} inView>
-              <a href="#" className="block bg-white border border-border rounded-xl p-6 h-full hover:border-foreground/30 transition-colors group">
-                <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
-                  <span className="uppercase tracking-[0.12em]">{p.tag}</span>
-                  <span>{p.time}</span>
-                </div>
-                <h3 className="text-base font-semibold tracking-[-0.02em] leading-snug">{p.title}</h3>
-                <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-foreground">
-                  Read <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </span>
-              </a>
-            </BlurFade>
-          ))}
-        </div>
-      </Section>
+      <StudioSection />
 
-      {/* FAQ */}
-      <Section className="pt-10 pb-20" eyebrow="Questions" title={<span id="faq">Things people usually ask.</span>}>
-        <div className="mt-10 max-w-3xl mx-auto divide-y divide-border border-y border-border">
-          {faqs.map((f, i) => {
-            const open = openFaq === i;
-            return (
-              <button
-                key={f.q}
-                onClick={() => setOpenFaq(open ? null : i)}
-                className="w-full text-left py-5 flex gap-6 items-start group"
-              >
-                <span className="flex-1">
-                  <span className="block text-base font-semibold tracking-[-0.02em] text-foreground">{f.q}</span>
-                  {open && <span className="block mt-2 text-[15px] text-muted-foreground leading-relaxed">{f.a}</span>}
-                </span>
-                <span className="mt-0.5 w-7 h-7 rounded-md border border-border flex items-center justify-center flex-shrink-0 group-hover:bg-neutral-100 transition-colors">
-                  {open ? <Minus className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </Section>
+      <FaqSection />
 
       {/* Final CTA with call illustration */}
       <section className="mx-auto max-w-5xl px-6 pb-24">
@@ -1163,7 +825,6 @@ const LandingPage = () => {
           </div>
           <div className="flex gap-6 text-xs text-muted-foreground">
             <a href="#services" className="hover:text-foreground">Services</a>
-            <a href="#process" className="hover:text-foreground">Process</a>
             <a href="#faq" className="hover:text-foreground">FAQ</a>
             <a href="mailto:hello@codingroof.com" className="hover:text-foreground">Contact</a>
           </div>

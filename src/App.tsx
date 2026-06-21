@@ -1,12 +1,14 @@
 import { Route, Routes } from "react-router-dom";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import LandingPage from "@/pages/LandingPage";
+import ProductsPage from "@/pages/ProductsPage";
 
 function App() {
   return (
     <SmoothScroll>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/products" element={<ProductsPage />} />
         <Route path="/login" element={<PlaceholderPage title="Sign in" />} />
         <Route path="/dashboard" element={<PlaceholderPage title="Dashboard" />} />
       </Routes>
