@@ -3,7 +3,7 @@ import logo from "@/assets/logo.webp";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Banknote, BarChart3, Check, Cloud, Compass, CreditCard, Database, Factory, GraduationCap, Heart, Layers, LineChart, Menu, Rocket, ShieldCheck, ShoppingCart, Sparkles, Truck, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState, type MouseEvent } from "react";
 import { motion, type MotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { BlurFade } from "@/components/ui/blur-fade";
@@ -16,6 +16,9 @@ import { CapabilitiesSection } from "@/components/CapabilitiesSection";
 import { StudioSection } from "@/components/StudioSection";
 import { FaqSection } from "@/components/FaqSection";
 import { useLenis } from "lenis/react";
+
+const NAV_OFFSET = -80;
+
 const links = [
   { href: "#services", label: "Services" },
   { href: "#work", label: "Work" },
@@ -24,9 +27,32 @@ const links = [
   { href: "#faq", label: "FAQ" },
 ];
 
+function scrollToHash(href: string, lenis: ReturnType<typeof useLenis>) {
+  const id = href.replace(/^#/, "");
+  if (!id) return false;
+  const el = document.getElementById(id);
+  if (!el) return false;
+  if (lenis) {
+    lenis.scrollTo(el, { offset: NAV_OFFSET, duration: 1.1 });
+  } else {
+    const top = el.getBoundingClientRect().top + window.scrollY + NAV_OFFSET;
+    window.scrollTo({ top, behavior: "smooth" });
+  }
+  window.history.pushState(null, "", href);
+  return true;
+}
+
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const lenis = useLenis();
+
+  const handleNavClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (!href.startsWith("#")) return;
+    e.preventDefault();
+    scrollToHash(href, lenis);
+    setOpen(false);
+  };
 
   useLenis((lenis) => {
     const next = lenis.scroll > 8;
@@ -62,6 +88,7 @@ const Navbar = () => {
             <a
               key={l.href}
               href={l.href}
+              onClick={(e) => handleNavClick(e, l.href)}
               className="hover:text-foreground transition-colors"
             >
               {l.label}
@@ -95,7 +122,7 @@ const Navbar = () => {
                 key={l.href}
                 href={l.href}
                 className="text-muted-foreground hover:text-foreground"
-                onClick={() => setOpen(false)}
+                onClick={(e) => handleNavClick(e, l.href)}
               >
                 {l.label}
               </a>
@@ -113,6 +140,25 @@ const Navbar = () => {
       )}
     </header>
   );
+};
+
+/** Scroll to hash target on load and when the hash changes (e.g. codingroof.com/#work). */
+const ScrollToHash = () => {
+  const lenis = useLenis();
+
+  useEffect(() => {
+    const scroll = () => {
+      const hash = window.location.hash;
+      if (!hash) return;
+      window.setTimeout(() => scrollToHash(hash, lenis), 120);
+    };
+
+    scroll();
+    window.addEventListener("hashchange", scroll);
+    return () => window.removeEventListener("hashchange", scroll);
+  }, [lenis]);
+
+  return null;
 };
 
 // ===== Section =====
@@ -568,6 +614,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <ScrollProgress />
+      <ScrollToHash />
       <Navbar />
       <Hero />
 
@@ -696,7 +743,7 @@ const LandingPage = () => {
 
       <div className="bg-white">
       {/* Industries — hand-drawn + swipeable */}
-      <section id="industries" className="relative pt-10 pb-24 overflow-hidden">
+      <section id="industries" className="relative pt-10 pb-24 overflow-hidden scroll-mt-[88px]">
         <div className="mx-auto max-w-6xl px-6">
           {/* Header */}
           <div className="max-w-2xl">
@@ -792,8 +839,8 @@ const LandingPage = () => {
       <FaqSection />
 
       {/* Final CTA with call illustration */}
-      <section className="mx-auto max-w-5xl px-6 pb-24">
-        <div className="bg-neutral-100 rounded-2xl p-10 md:p-14 flex flex-col md:flex-row md:items-center gap-10 md:gap-12">
+      <section id="pricing" className="mx-auto max-w-5xl px-6 pb-24 scroll-mt-[88px]">
+        <div id="contact" className="bg-neutral-100 rounded-2xl p-10 md:p-14 flex flex-col md:flex-row md:items-center gap-10 md:gap-12">
           <div className="flex-1 mix-blend-multiply md:max-w-sm">
             <img src={callIllustration} alt="Discovery call illustration" className="w-full h-auto" />
           </div>
