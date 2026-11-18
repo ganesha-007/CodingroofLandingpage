@@ -1,3 +1,5 @@
+import funnello from "@/assets/products/funnello.svg";
+import vector from "@/assets/products/vector.png";
 import goldLoan from "@/assets/products/gold-loan.svg";
 import banking from "@/assets/products/banking.svg";
 import surgicals from "@/assets/products/surgicals.svg";
@@ -9,8 +11,26 @@ import salon from "@/assets/products/salon.svg";
 import fieldService from "@/assets/products/field-service.svg";
 import { Bot, Mic, ScanLine, ShieldCheck, Smile, TrendingUp, type LucideIcon } from "lucide-react";
 
+export type ProductCategory = "essentials" | "industry";
+
+export const categories: { id: ProductCategory; label: string; desc: string }[] = [
+  {
+    id: "essentials",
+    label: "Business essentials",
+    desc: "Sales, projects and operations software that every growing team needs.",
+  },
+  {
+    id: "industry",
+    label: "Industry products",
+    desc: "Complete systems built around the day-to-day of a specific industry.",
+  },
+];
+
 export interface Product {
   slug: string;
+  category: ProductCategory;
+  /** Live product URL, when the product has its own site. */
+  url?: string;
   name: string;
   logo: string;
   tag: string;
@@ -20,7 +40,37 @@ export interface Product {
 
 export const products: Product[] = [
   {
+    slug: "funnello",
+    category: "essentials",
+    name: "Funnello",
+    logo: funnello,
+    tag: "CRM",
+    desc: "Leads, calls, deals, invoices and commission, in one place.",
+    features: ["Leads", "Calls", "Deals", "Invoices", "Commission"],
+    url: "https://funnello.codingroof.com",
+  },
+  {
+    slug: "vector",
+    category: "essentials",
+    name: "Vector",
+    logo: vector,
+    tag: "Projects & tasks",
+    desc: "Plan projects, track tasks and keep every team's work in one shared workspace.",
+    features: ["Projects", "Tasks and issues", "Team workspaces"],
+    url: "https://vector.codingroof.com",
+  },
+  {
+    slug: "erp",
+    category: "essentials",
+    name: "ERP",
+    logo: erp,
+    tag: "Business operations",
+    desc: "Procurement, inventory, sales, accounting and reporting on one connected backbone.",
+    features: ["Procurement", "Inventory", "Sales", "Accounting and reporting"],
+  },
+  {
     slug: "gold-loan",
+    category: "industry",
     name: "Gold Loan",
     logo: goldLoan,
     tag: "Lending & pawn operations",
@@ -29,6 +79,7 @@ export const products: Product[] = [
   },
   {
     slug: "banking",
+    category: "industry",
     name: "Banking",
     logo: banking,
     tag: "Core banking",
@@ -37,6 +88,7 @@ export const products: Product[] = [
   },
   {
     slug: "surgicals",
+    category: "industry",
     name: "Surgicals",
     logo: surgicals,
     tag: "Medical supply chain",
@@ -44,15 +96,8 @@ export const products: Product[] = [
     features: ["Batch tracking", "Expiry control", "Billing", "Reorder"],
   },
   {
-    slug: "erp",
-    name: "ERP",
-    logo: erp,
-    tag: "Business operations",
-    desc: "Procurement, inventory, sales, accounting and reporting on one connected backbone.",
-    features: ["Procurement", "Inventory", "Sales", "Accounting and reporting"],
-  },
-  {
     slug: "textile",
+    category: "industry",
     name: "Textile",
     logo: textile,
     tag: "Fabric & orders",
@@ -61,6 +106,7 @@ export const products: Product[] = [
   },
   {
     slug: "print",
+    category: "industry",
     name: "Print",
     logo: printing,
     tag: "Print shop workflows",
@@ -69,6 +115,7 @@ export const products: Product[] = [
   },
   {
     slug: "retail",
+    category: "industry",
     name: "Retail",
     logo: retail,
     tag: "Stores & counters",
@@ -77,6 +124,7 @@ export const products: Product[] = [
   },
   {
     slug: "salon",
+    category: "industry",
     name: "Salon",
     logo: salon,
     tag: "Salons & spas",
@@ -85,6 +133,7 @@ export const products: Product[] = [
   },
   {
     slug: "field-service",
+    category: "industry",
     name: "Field Service",
     logo: fieldService,
     tag: "On-site operations",

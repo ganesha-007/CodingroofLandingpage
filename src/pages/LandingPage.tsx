@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Check, Compass, Layers, LineChart, Minus, Plus, Rocket, ShieldCheck, Zap, type LucideIcon } from "lucide-react";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { motion, type MotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { products, productBySlug } from "@/data/products";
+import { categories, products, productBySlug, type Product } from "@/data/products";
 import {
   AiHelperGrid,
   CONTACT_EMAIL,
@@ -12,7 +12,6 @@ import {
   Navbar,
   ProductTile,
   SectionHeader,
-  demoHrefFor,
   useHashScroll,
 } from "@/components/site";
 
@@ -132,18 +131,18 @@ const Hero = () => (
     />
     <Container className="relative pt-16 md:pt-24">
       <div className="mx-auto max-w-3xl text-center">
-        <a
-          href="#products"
+        <Link
+          to="/products"
           className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
         >
           <span className="flex -space-x-1">
-            {["gold-loan", "retail", "erp"].map((s) => (
+            {["funnello", "vector", "gold-loan"].map((s) => (
               <img key={s} src={productBySlug[s].logo} alt="" className="h-4 w-4 rounded-full bg-white ring-2 ring-white" />
             ))}
           </span>
           {products.length} products, one platform
           <ArrowRight className="h-3 w-3" />
-        </a>
+        </Link>
         <h1 className="mt-6 text-[40px] md:text-[64px] font-semibold tracking-[-0.035em] leading-[1.04] text-foreground text-balance">
           The software your <Highlight>business</Highlight> runs on.
         </h1>
@@ -152,12 +151,12 @@ const Hero = () => (
           builds when you need something of your own.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a
-            href="#products"
+          <Link
+            to="/products"
             className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             Explore products <ArrowRight className="h-4 w-4" />
-          </a>
+          </Link>
           <a
             href="#contact"
             className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-md border border-border bg-white px-6 text-sm font-medium hover:bg-muted"
@@ -202,37 +201,57 @@ const Stats = () => (
 );
 
 // ===== Products =====
+const HomeProductCard = ({ p, compact = false }: { p: Product; compact?: boolean }) => (
+  <Link
+    to={`/products#${p.slug}`}
+    className="group flex flex-col rounded-2xl border border-border bg-white p-6 transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_30px_-18px_rgba(36,99,209,0.45)]"
+  >
+    <div className="flex items-center gap-3.5">
+      <ProductTile src={p.logo} name={p.name} />
+      <div className="min-w-0">
+        <h3 className="text-[17px] font-semibold tracking-[-0.01em]">{p.name}</h3>
+        <p className="text-[13px] leading-snug text-muted-foreground">{p.tag}</p>
+      </div>
+    </div>
+    <p className={`mt-4 flex-1 text-sm leading-relaxed text-muted-foreground ${compact ? "line-clamp-3" : ""}`}>{p.desc}</p>
+    <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+      Learn more <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+    </span>
+  </Link>
+);
+
 const Products = () => (
   <section id="products" className="py-20 md:py-28">
     <Container>
-      <SectionHeader
-        eyebrow="Products"
-        title="One suite for the businesses that keep things running."
-        desc="Each product is a complete, production-grade system, not a template. Run one, or several on the same platform with one login and one source of truth."
-      />
-      <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((p) => (
-          <article key={p.slug} className="group flex flex-col bg-white p-6 md:p-7 transition-colors hover:bg-muted/50">
-            <div className="flex items-center gap-3.5">
-              <ProductTile src={p.logo} name={p.name} />
-              <div>
-                <h3 className="text-[17px] font-semibold tracking-[-0.01em]">{p.name}</h3>
-                <p className="text-[13px] text-muted-foreground">{p.tag}</p>
-              </div>
-            </div>
-            <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">{p.desc}</p>
-            <a
-              href={demoHrefFor(p.name)}
-              className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-primary"
-            >
-              Request a demo <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-            </a>
-          </article>
-        ))}
+      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <SectionHeader
+          eyebrow="Products"
+          title="One suite for the businesses that keep things running."
+          desc="Each product is a complete, production-grade system, not a template. Run one, or several together."
+        />
+        <Link
+          to="/products"
+          className="inline-flex h-10 shrink-0 items-center gap-2 self-start rounded-md border border-border px-4 text-sm font-medium hover:bg-muted md:self-auto"
+        >
+          View all products <ArrowRight className="h-4 w-4" />
+        </Link>
       </div>
-      <Link to="/products" className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-        View the full catalog <ArrowRight className="h-3.5 w-3.5" />
-      </Link>
+      {categories.map((c) => {
+        const items = products.filter((p) => p.category === c.id);
+        return (
+          <div key={c.id} className="mt-12">
+            <div className="flex items-baseline justify-between gap-4 border-b border-border pb-3">
+              <h3 className="text-sm font-semibold">{c.label}</h3>
+              <span className="text-xs text-muted-foreground">{items.length} products</span>
+            </div>
+            <div className={`mt-6 grid gap-4 sm:grid-cols-2 ${items.length > 3 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
+              {items.map((p) => (
+                <HomeProductCard key={p.slug} p={p} compact={items.length > 3} />
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </Container>
   </section>
 );
