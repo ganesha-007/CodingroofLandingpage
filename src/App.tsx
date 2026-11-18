@@ -4,7 +4,6 @@ import ProductsPage from "@/pages/ProductsPage";
 import PartnersPage from "@/pages/PartnersPage";
 import CareersPage from "@/pages/CareersPage";
 import { RouteSeo } from "@/seo/RouteSeo";
-import { PrivacyPage, TermsPage } from "@/pages/LegalPage";
 
 function App() {
   return (
@@ -15,8 +14,6 @@ function App() {
       <Route path="/products" element={<ProductsPage />} />
       <Route path="/partners" element={<PartnersPage />} />
       <Route path="/careers" element={<CareersPage />} />
-      <Route path="/privacy" element={<PrivacyPage />} />
-      <Route path="/terms" element={<TermsPage />} />
       <Route path="/login" element={<PlaceholderPage title="Sign in" />} />
       <Route path="/dashboard" element={<PlaceholderPage title="Dashboard" />} />
       <Route path="*" element={<PlaceholderPage title="Page not found" />} />

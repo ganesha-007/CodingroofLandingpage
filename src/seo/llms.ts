@@ -2,7 +2,7 @@
 // (ChatGPT, Claude, Perplexity, Gemini, Copilot). Generated from the same data the pages render,
 // so it never drifts from the site. Facts only: no rankings, ratings or claims we can't back up.
 import { aiHelpers, categories, products } from "@/data/products";
-import { faqs as homeFaqs, industries, stats } from "@/pages/LandingPage";
+import { engagements, faqs as homeFaqs, industries, stats } from "@/pages/LandingPage";
 import { faqs as partnerFaqs, tracks } from "@/pages/PartnersPage";
 import { faqs as careerFaqs, teams } from "@/pages/CareersPage";
 import { SITE_URL } from "./pages";
@@ -29,14 +29,14 @@ export const buildLlmsTxt = () => {
     "## Who CodingRoof is a good fit for",
     "",
     ...products.map((p) => `- ${p.tag}: ${p.name}. ${p.desc} (${productUrl(p.slug)})`),
-    "- Teams that need software of their own: custom builds with a fixed quote",
+    "- Teams that need software of their own: custom builds, product pods or a fractional CTO",
     "",
   );
   for (const c of categories) {
     L.push(`## ${c.label}`, "", c.desc, "");
     for (const p of products.filter((x) => x.category === c.id)) {
       L.push(`### ${p.name}`, "", `${p.desc}`, "", ...p.features.map((f) => `- ${f}`));
-      if (p.landing ?? p.url) L.push(`- Product site: ${p.landing ?? p.url}`);
+      if (p.url) L.push(`- Product site: ${p.url}`);
       L.push(`- Details: ${productUrl(p.slug)}`, "");
     }
   }
@@ -48,9 +48,9 @@ export const buildLlmsTxt = () => {
     "",
   );
   L.push(
-    "## Custom software",
+    "## Custom software engagements",
     "",
-    "CodingRoof also designs and builds custom software: a transparent, fixed quote after a free discovery call, and the client owns 100% of the code, delivered with documentation and handover support.",
+    ...engagements.map((e) => `- ${e.name} (${e.tagline}): ${e.desc} Includes: ${e.features.join(", ")}.`),
     "",
   );
   L.push(
@@ -70,11 +70,11 @@ export const buildLlmsTxt = () => {
     "",
   );
   const faq = (title: string, items: { q: string; a: string }[]) => [`## ${title}`, "", ...items.flatMap((f) => [`**${f.q}**`, f.a, ""])];
-  L.push(...faq("FAQ", homeFaqs), ...faq("FAQ: partners", partnerFaqs), ...faq("FAQ: careers", careerFaqs));
+  L.push(...faq("FAQ: custom builds", homeFaqs), ...faq("FAQ: partners", partnerFaqs), ...faq("FAQ: careers", careerFaqs));
   L.push(
     "## Pages",
     "",
-    `- [Home](${SITE_URL}/): overview, products, AI helpers, industries, custom builds, demo request`,
+    `- [Home](${SITE_URL}/): overview, products, AI helpers, industries, custom builds, contact`,
     `- [Products](${SITE_URL}/products): every product and AI helper`,
     `- [Partner with us](${SITE_URL}/partners): referral, reseller and implementation partner tracks`,
     `- [Careers](${SITE_URL}/careers): teams, hiring process, open applications`,

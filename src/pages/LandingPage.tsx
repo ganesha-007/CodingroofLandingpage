@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, ArrowUpRight, Camera, Compass, Layers, LineChart, Minus, Pause, Play, Plus, Rocket, ShieldCheck, Sparkles, Zap, type LucideIcon } from "lucide-react";
+import { ArrowRight, Check, Compass, Layers, LineChart, Minus, Pause, Play, Plus, Rocket, ShieldCheck, Zap, type LucideIcon } from "lucide-react";
 import { type MouseEvent, ReactNode, useEffect, useId, useRef, useState } from "react";
 import { motion, type MotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { categories, products, productBySlug, type Product } from "@/data/products";
@@ -97,42 +97,24 @@ const Highlight = ({ children }: { children: ReactNode }) => {
 };
 
 // ===== Hero =====
-/**
- * Hero brand film (made with Higgsfield Higgsedit). Autoplays muted, pauses while off screen, never preloads the full file,
- * and shows the poster for reduced motion or data-saver connections. On phones it zooms into the assistant
- * panel (the centre of the frame) so the UI text stays readable instead of shrinking the whole desktop scene.
- */
-const HERO_ALT = "CodingRoof assistant answering across Gold Loan, Retail and FitForge";
-const heroMedia =
-  "block aspect-video max-w-none w-[249%] -ml-[95.4%] -mt-[33%] object-cover sm:m-0 sm:w-full sm:max-w-full";
-
+/** Hero brand film (made with Higgsfield Higgsedit). Silent autoplay loop; static poster for reduced motion. */
 const HeroFilm = () => {
   const reduceMotion = useReducedMotion();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [posterOnly, setPosterOnly] = useState(false);
-
-  useEffect(() => {
-    const c = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
-    if (c?.saveData || /(^|-)2g$/.test(c?.effectiveType ?? "")) setPosterOnly(true);
-  }, []);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    const io = new IntersectionObserver(
-      ([entry]) => (entry.isIntersecting ? v.play().catch(() => {}) : v.pause()),
-      { threshold: 0.2 }
-    );
-    io.observe(v);
-    return () => io.disconnect();
-  }, [reduceMotion, posterOnly]);
-
   return (
-    <div className="aspect-[8/5] overflow-hidden rounded-2xl border border-border bg-[#F1EEFB] shadow-[0_30px_80px_-30px_rgba(40,30,120,0.35)] sm:aspect-auto">
-      {reduceMotion || posterOnly ? (
-        <img src={heroFilmPoster} alt={HERO_ALT} className={heroMedia} />
+    <div className="overflow-hidden rounded-2xl border border-border bg-[#F1EEFB] shadow-[0_30px_80px_-30px_rgba(40,30,120,0.35)]">
+      {reduceMotion ? (
+        <img src={heroFilmPoster} alt="CodingRoof assistant answering across Gold Loan, Retail and FitForge" className="block aspect-[4/3] w-full object-cover sm:aspect-video" />
       ) : (
-        <video ref={videoRef} className={heroMedia} autoPlay muted loop playsInline preload="metadata" poster={heroFilmPoster} aria-label={HERO_ALT}>
+        <video
+          className="block aspect-[4/3] w-full object-cover sm:aspect-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster={heroFilmPoster}
+          aria-label="CodingRoof assistant answering across Gold Loan, Retail and FitForge"
+        >
           <source src={heroFilmWebm} type="video/webm" />
           <source src={heroFilmMp4} type="video/mp4" />
         </video>
@@ -174,18 +156,18 @@ const Hero = () => (
           platform built for your industry.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a
-            href="#contact"
-            className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-primary px-6 text-[15px] font-medium text-primary-foreground shadow-[0_8px_20px_-8px_rgba(36,99,209,0.6)] hover:bg-primary/90"
-          >
-            Book a demo <ArrowRight className="h-4 w-4" />
-          </a>
           <Link
             to="/products"
-            className="inline-flex h-12 w-full sm:w-auto items-center justify-center rounded-md border border-border bg-white px-6 text-[15px] font-medium hover:bg-muted"
+            className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow-[0_8px_20px_-8px_rgba(36,99,209,0.6)] hover:bg-primary/90"
           >
-            Explore products
+            Explore products <ArrowRight className="h-4 w-4" />
           </Link>
+          <a
+            href="#contact"
+            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-md border border-border bg-white px-6 text-sm font-medium hover:bg-muted"
+          >
+            Book a demo
+          </a>
         </div>
       </div>
       <div className="mx-auto mt-14 max-w-5xl md:mt-16">
@@ -197,6 +179,7 @@ const Hero = () => (
 
 // ===== Stats =====
 export const stats = [
+  { stat: "3.4×", label: "Average ROI within 12 months" },
   { stat: "12+", label: "SaaS products shipped" },
   { stat: "14+", label: "Countries served" },
   { stat: "6 weeks", label: "From kickoff to MVP" },
@@ -205,11 +188,16 @@ export const stats = [
 const Stats = () => (
   <section className="py-16 md:py-20">
     <Container>
-      <dl className="grid grid-cols-3 overflow-hidden rounded-2xl border border-border">
+      <dl className="grid grid-cols-2 md:grid-cols-4 overflow-hidden rounded-2xl border border-border">
         {stats.map((s, i) => (
-          <div key={s.label} className={`flex flex-col p-4 sm:p-6 md:p-8 ${i > 0 ? "border-l" : ""} border-border`}>
-            <dt className="text-xs leading-snug text-muted-foreground sm:text-sm">{s.label}</dt>
-            <dd className="mt-auto whitespace-nowrap pt-2 text-xl sm:text-3xl md:text-4xl font-semibold tracking-[-0.03em] text-foreground">{s.stat}</dd>
+          <div
+            key={s.label}
+            className={`p-6 md:p-8 ${i % 2 === 1 ? "border-l" : ""} ${i >= 2 ? "border-t md:border-t-0" : ""} ${
+              i === 2 ? "md:border-l" : ""
+            } border-border`}
+          >
+            <dt className="text-sm text-muted-foreground">{s.label}</dt>
+            <dd className="mt-2 text-3xl md:text-4xl font-semibold tracking-[-0.03em] text-foreground">{s.stat}</dd>
           </div>
         ))}
       </dl>
@@ -218,37 +206,24 @@ const Stats = () => (
 );
 
 // ===== Products =====
-/** Phones: compact one-line rows. md+: full cards in a 3-column grid (no orphan cards: 3 and 9 products). */
-const HomeProductCard = ({ p }: { p: Product }) => {
-  const cls =
-    "group flex items-center gap-3.5 rounded-xl border border-border bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_30px_-18px_rgba(36,99,209,0.45)] md:flex-col md:items-stretch md:gap-0 md:rounded-2xl md:p-6";
-  const Arrow = p.landing ? ArrowUpRight : ArrowRight;
-  const inner = (
-    <>
-      <div className="flex min-w-0 flex-1 items-center gap-3.5 md:flex-none">
-        <ProductTile src={p.logo} name={p.name} />
-        <div className="min-w-0">
-          <h3 className="text-base md:text-[17px] font-semibold tracking-[-0.01em]">{p.name}</h3>
-          <p className="text-[13px] leading-snug text-muted-foreground">{p.tag}</p>
-        </div>
+const HomeProductCard = ({ p, compact = false }: { p: Product; compact?: boolean }) => (
+  <Link
+    to={`/products#${p.slug}`}
+    className="group flex flex-col rounded-2xl border border-border bg-white p-6 transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_30px_-18px_rgba(36,99,209,0.45)]"
+  >
+    <div className="flex items-center gap-3.5">
+      <ProductTile src={p.logo} name={p.name} />
+      <div className="min-w-0">
+        <h3 className="text-[17px] font-semibold tracking-[-0.01em]">{p.name}</h3>
+        <p className="text-[13px] leading-snug text-muted-foreground">{p.tag}</p>
       </div>
-      <p className="mt-4 hidden flex-1 text-[15px] leading-relaxed text-muted-foreground md:block">{p.desc}</p>
-      <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-primary md:mt-5">
-        <span className="hidden md:inline">Learn more</span>
-        <Arrow className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-      </span>
-    </>
-  );
-  return p.landing ? (
-    <a href={p.landing} target="_blank" rel="noopener" className={cls} aria-label={`${p.name}: learn more (opens product site)`}>
-      {inner}
-    </a>
-  ) : (
-    <Link to={`/products#${p.slug}`} className={cls}>
-      {inner}
-    </Link>
-  );
-};
+    </div>
+    <p className={`mt-4 flex-1 text-sm leading-relaxed text-muted-foreground ${compact ? "line-clamp-3" : ""}`}>{p.desc}</p>
+    <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+      Learn more <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+    </span>
+  </Link>
+);
 
 const Products = () => (
   <section id="products" className="py-20 md:py-28">
@@ -274,9 +249,9 @@ const Products = () => (
               <h3 className="text-sm font-semibold">{c.label}</h3>
               <span className="text-xs text-muted-foreground">{items.length} products</span>
             </div>
-            <div className="mt-6 grid gap-3 md:grid-cols-3 md:gap-4">
+            <div className={`mt-6 grid gap-4 sm:grid-cols-2 ${items.length > 3 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
               {items.map((p) => (
-                <HomeProductCard key={p.slug} p={p} />
+                <HomeProductCard key={p.slug} p={p} compact={items.length > 3} />
               ))}
             </div>
           </div>
@@ -287,82 +262,15 @@ const Products = () => (
 );
 
 // ===== AI Helpers =====
-/** Illustrative "photo of a bill -> structured bill" panel for OCR billing (sample data). */
-const billLines = [
-  { item: "Basmati rice 25 kg", short: "Rice 25kg", qty: 2, amount: "2,900" },
-  { item: "Sunflower oil 15 L", short: "Oil 15L", qty: 1, amount: "2,150" },
-  { item: "Toor dal 5 kg", short: "Dal 5kg", qty: 3, amount: "1,980" },
-];
-const OcrVisual = () => (
-  <div className="relative grid items-center gap-4 sm:grid-cols-[minmax(0,0.85fr)_auto_minmax(250px,1.15fr)]">
-    <div className="relative mx-auto w-full max-w-[240px] -rotate-2 rounded-lg border border-[#E7DFC9] bg-[#FFFBF0] p-4 font-mono text-[12px] leading-6 text-[#5B4A2E] shadow-[0_12px_30px_-16px_rgba(60,40,10,0.35)]">
-      <span className="absolute -top-3 left-3 inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 font-sans text-[11px] font-medium text-muted-foreground ring-1 ring-border">
-        <Camera className="h-3 w-3" /> Photo of a paper bill
-      </span>
-      <p className="mt-1 italic">Sri Murugan Stores</p>
-      {billLines.map((l) => (
-        <p key={l.item} className="flex justify-between italic">
-          <span className="truncate pr-2">{l.qty} × {l.short}</span>
-          <span>{l.amount}</span>
-        </p>
-      ))}
-      <p className="mt-1 flex justify-between border-t border-dashed border-[#D9CDA9] pt-1 italic">
-        <span>Total</span>
-        <span>7,030</span>
-      </p>
-    </div>
-    <div className="flex justify-center">
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground shadow-sm">
-        <Sparkles className="h-3.5 w-3.5" /> OCR billing
-      </span>
-    </div>
-    <div className="rounded-xl border border-border bg-white p-4 shadow-[0_16px_40px_-24px_rgba(36,99,209,0.45)]">
-      <div className="flex items-center justify-between border-b border-border pb-2.5">
-        <p className="whitespace-nowrap text-sm font-semibold">Bill #1042</p>
-        <span className="whitespace-nowrap rounded-full bg-accent px-2 py-0.5 text-[11px] font-medium text-primary">Created automatically</span>
-      </div>
-      <table className="mt-2 w-full text-[13px]">
-        <thead>
-          <tr className="text-left text-muted-foreground">
-            <th className="py-1 font-medium">Item</th>
-            <th className="py-1 text-right font-medium">Qty</th>
-            <th className="py-1 text-right font-medium">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {billLines.map((l) => (
-            <tr key={l.item} className="border-t border-border">
-              <td className="py-1.5 pr-2">{l.item}</td>
-              <td className="py-1.5 text-right tabular-nums">{l.qty}</td>
-              <td className="py-1.5 text-right tabular-nums">₹{l.amount}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <p className="mt-2 flex justify-between border-t border-border pt-2 text-sm font-semibold">
-        <span>Total</span>
-        <span className="tabular-nums">₹7,030</span>
-      </p>
-    </div>
-  </div>
-);
-
 const AiHelpers = () => (
   <section id="ai-helpers" className="border-y border-border bg-muted py-20 md:py-28">
     <Container>
-      <div className="grid items-center gap-12 lg:grid-cols-12">
-        <div className="lg:col-span-5">
-        <SectionHeader
-          eyebrow="AI Helpers"
-          title="AI that works inside the products you already use."
-          desc="Lightweight helpers that plug into any CodingRoof product, taking over the busywork and surfacing what needs attention."
-        />
-        </div>
-        <div className="lg:col-span-7">
-          <OcrVisual />
-        </div>
-      </div>
-      <div className="mt-14">
+      <SectionHeader
+        eyebrow="AI Helpers"
+        title="AI that works inside the products you already use."
+        desc="Lightweight helpers that plug into any CodingRoof product, taking over the busywork and surfacing what needs attention."
+      />
+      <div className="mt-12">
         <AiHelperGrid />
       </div>
     </Container>
@@ -395,7 +303,7 @@ const ProductChips = ({ slugs, onPhoto = false }: { slugs: string[]; onPhoto?: b
         <Link
           key={slug}
           to={`/products#${slug}`}
-          className={`inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
             onPhoto ? "bg-white/95 shadow-sm hover:bg-white" : "border border-border hover:border-primary/40 hover:bg-accent"
           }`}
         >
@@ -491,7 +399,7 @@ const Industries = () => {
               </div>
               <div className="flex-1 p-6">
                 <h3 className="text-base font-semibold">{it.name}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{it.desc}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{it.desc}</p>
               </div>
             </article>
           );
@@ -515,6 +423,7 @@ const Industries = () => {
 };
 
 // ===== Principles (kept: sticker cards + ink connector, restyled in blue) =====
+const BLUE_LINE = "hsl(218 71% 48%)";
 
 const principles: { title: string; desc: string; icon: LucideIcon }[] = [
   { title: "Architecture-led development", desc: "Systems designed for scale before complexity appears.", icon: Layers },
@@ -536,28 +445,233 @@ interface Anchor {
  * right edge of each card to the left edge of the next, drawn in on scroll.
  * Only the colour changed (blue instead of black).
  */
-/** Six principles in a compact 3×2 grid (was a tall zig-zag; now about a quarter of the height). */
-const Principles = () => (
-  <section className="border-t border-border py-20 md:py-28">
-    <Container>
-      <SectionHeader
-        eyebrow="How we build"
-        title="Six principles behind every system we ship."
-        desc="The same engineering standards apply whether you run one of our products or we build one for you."
-      />
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {principles.map((p, i) => (
-          <StickerCard key={p.title} index={i + 1} {...p} />
-        ))}
-      </div>
-    </Container>
-  </section>
-);
+const InkConnector = ({
+  itemRefs,
+  containerRef,
+  sectionRef,
+  active,
+}: {
+  itemRefs: React.MutableRefObject<Array<HTMLDivElement | null>>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  sectionRef: React.RefObject<HTMLElement | null>;
+  active: number;
+}) => {
+  const reduce = useReducedMotion();
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  const [anchors, setAnchors] = useState<Anchor[]>([]);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const measure = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const cRect = container.getBoundingClientRect();
+      const next: Anchor[] = [];
+      itemRefs.current.forEach((el) => {
+        if (!el) return;
+        const card = el.querySelector<HTMLElement>("[data-sticker-card]") ?? el;
+        const r = card.getBoundingClientRect();
+        // Line always enters from the LEFT edge and exits from the RIGHT edge of every card.
+        next.push({ xIn: r.left - cRect.left, xOut: r.right - cRect.left, y: r.top - cRect.top + r.height / 2 });
+      });
+      setSize({ w: container.clientWidth, h: container.clientHeight });
+      setAnchors(next);
+    };
+    const schedule = () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(measure);
+    };
+    schedule();
+    const ro = new ResizeObserver(schedule);
+    if (containerRef.current) ro.observe(containerRef.current);
+    itemRefs.current.forEach((el) => el && ro.observe(el));
+    window.addEventListener("resize", schedule);
+    // re-measure once fonts/images settle
+    const t = window.setTimeout(schedule, 250);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", schedule);
+      window.clearTimeout(t);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [containerRef, itemRefs]);
+
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start 30%", "end 80%"] });
+
+  // Separate wobbly cubic-bezier segments: card[i].right -> card[i+1].left.
+  const buildSegments = (pts: Anchor[]) => {
+    if (pts.length < 2) return [];
+    const phi = 0.61803398875;
+    const jitter = (i: number, seed: number) => ((((i + 1) * phi + seed) % 1) - 0.5) * 14; // ±7px
+    const segments: string[] = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i];
+      const b = pts[i + 1];
+      const ax = a.xOut;
+      const ay = a.y;
+      const bx = b.xIn;
+      const by = b.y;
+      const dy = by - ay;
+      const horiz = Math.max(60, Math.abs(bx - ax) * 0.55);
+      // Always leave to the right, arrive from the left -> preserves the curvy zig-zag.
+      const c1x = ax + horiz + jitter(i, 0.13);
+      const c1y = ay + dy * 0.15 + jitter(i, 0.41);
+      const c2x = bx - horiz + jitter(i, 0.77);
+      const c2y = by - dy * 0.15 + jitter(i, 0.29);
+      segments.push(
+        `M ${ax.toFixed(1)} ${ay.toFixed(1)} C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${bx.toFixed(1)} ${by.toFixed(1)}`
+      );
+    }
+    return segments;
+  };
+
+  const segments = buildSegments(anchors);
+
+  if (!size.w || !size.h || anchors.length < 2) {
+    return <div className="hidden md:block absolute inset-0 pointer-events-none" aria-hidden />;
+  }
+
+  return (
+    <svg
+      width={size.w}
+      height={size.h}
+      viewBox={`0 0 ${size.w} ${size.h}`}
+      className="hidden md:block absolute inset-0 pointer-events-none"
+      aria-hidden
+      style={{ overflow: "visible" }}
+    >
+      <defs>
+        <filter id="rough-ink" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" />
+          <feDisplacementMap in="SourceGraphic" scale="1.2" />
+        </filter>
+      </defs>
+
+      {segments.map((d, i) => (
+        <InkSegment key={d} d={d} index={i} total={segments.length} progress={scrollYProgress} reduce={reduce} />
+      ))}
+
+      {anchors.map((a, i) => (
+        <g key={i}>
+          {i < anchors.length - 1 && (
+            <motion.circle
+              cx={a.xOut}
+              cy={a.y}
+              r={3}
+              fill={BLUE_LINE}
+              initial={{ opacity: 0, scale: 0.4 }}
+              animate={{ opacity: i <= active ? 1 : 0, scale: i <= active ? 1 : 0.4 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              style={{ transformOrigin: `${a.xOut}px ${a.y}px` }}
+            />
+          )}
+          {i > 0 && (
+            <motion.circle
+              cx={a.xIn}
+              cy={a.y}
+              r={3}
+              fill={BLUE_LINE}
+              initial={{ opacity: 0, scale: 0.4 }}
+              animate={{ opacity: i <= active ? 1 : 0, scale: i <= active ? 1 : 0.4 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              style={{ transformOrigin: `${a.xIn}px ${a.y}px` }}
+            />
+          )}
+        </g>
+      ))}
+    </svg>
+  );
+};
+
+const InkSegment = ({
+  d,
+  index,
+  total,
+  progress,
+  reduce,
+}: {
+  d: string;
+  index: number;
+  total: number;
+  progress: MotionValue<number>;
+  reduce: boolean | null;
+}) => {
+  const pathLength = useTransform(progress, [index / total, (index + 1) / total], [0, 1], { clamp: true });
+  return (
+    <motion.path
+      d={d}
+      fill="none"
+      stroke={BLUE_LINE}
+      strokeOpacity={0.6}
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      filter="url(#rough-ink)"
+      style={reduce ? { pathLength: 1 } : { pathLength }}
+      initial={reduce ? false : { pathLength: 0 }}
+    />
+  );
+};
+
+const Principles = () => {
+  const [active, setActive] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const colRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    itemRefs.current.forEach((el, i) => {
+      if (!el) return;
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setActive(i);
+        },
+        { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
+      );
+      io.observe(el);
+      observers.push(io);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="overflow-x-clip border-t border-border py-20 md:py-28">
+      <Container>
+        <div className="grid gap-12 md:grid-cols-12 md:gap-16">
+          <div className="md:col-span-5">
+            <div className="md:sticky md:top-32">
+              <SectionHeader
+                eyebrow="How we build"
+                title="Six principles behind every system we ship."
+                desc="The same engineering standards apply whether you run one of our products or we build one for you."
+              />
+            </div>
+          </div>
+          <div ref={colRef} className="relative flex flex-col gap-10 md:col-span-7 md:gap-36">
+            <InkConnector itemRefs={itemRefs} containerRef={colRef} sectionRef={sectionRef} active={active} />
+            {principles.map((p, i) => (
+              <div
+                key={p.title}
+                ref={(el) => {
+                  itemRefs.current[i] = el;
+                }}
+                className={`relative z-10 flex ${i % 2 === 1 ? "md:justify-end" : ""}`}
+              >
+                <StickerCard index={i + 1} {...p} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+};
 
 const StickerCard = ({ index, title, desc, icon: Icon }: { index: number; title: string; desc: string; icon: LucideIcon }) => (
   <div
     data-sticker-card
-    className="relative h-full w-full rounded-2xl border border-[hsl(218_40%_84%)] bg-white p-6 md:p-7 shadow-[5px_5px_0_0_hsl(218_80%_92%)] transition-shadow hover:shadow-[3px_3px_0_0_hsl(218_80%_88%)]"
+    className="relative w-full max-w-[440px] rounded-2xl border border-[hsl(218_40%_84%)] bg-white p-6 md:p-7 shadow-[5px_5px_0_0_hsl(218_80%_92%)] transition-shadow hover:shadow-[3px_3px_0_0_hsl(218_80%_88%)]"
   >
     <span className="absolute -top-3 right-6 rounded-full border border-[hsl(218_40%_84%)] bg-white px-2.5 py-0.5 font-mono text-[11px] tracking-[0.14em] text-primary">
       {String(index).padStart(2, "0")}
@@ -571,27 +685,75 @@ const StickerCard = ({ index, title, desc, icon: Icon }: { index: number; title:
         <svg width="56" height="6" viewBox="0 0 64 6" fill="none" className="mt-2 text-primary/50" aria-hidden>
           <path d="M1 3 Q 8 0.5, 16 3 T 32 3 T 48 3 T 63 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
         </svg>
-        <p className="mt-2.5 text-[15px] leading-relaxed text-muted-foreground">{desc}</p>
+        <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">{desc}</p>
       </div>
     </div>
   </div>
 );
 
-// ===== Custom builds =====
-const CustomBuilds = () => (
-  <section id="custom" className="border-t border-border bg-muted py-16 md:py-20">
-    <Container className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+// ===== Engagements =====
+export const engagements = [
+  {
+    name: "Sprint",
+    tagline: "Fixed scope, fixed price",
+    desc: "For MVPs, audits or focused launches with a defined outcome in 2–8 weeks.",
+    features: ["Discovery and roadmap", "Design and build", "Production launch"],
+    highlight: false,
+  },
+  {
+    name: "Product pod",
+    tagline: "Monthly retainer",
+    desc: "A senior, embedded squad shipping continuously alongside your team.",
+    features: ["Designer, 2–3 engineers and a PM", "Weekly demos and roadmap", "Direct Slack channel", "ROI reporting"],
+    highlight: true,
+  },
+  {
+    name: "Fractional CTO",
+    tagline: "Strategy and oversight",
+    desc: "Senior technical leadership for teams that need direction more than hands.",
+    features: ["Architecture review", "Hiring and process", "Vendor management"],
+    highlight: false,
+  },
+];
+
+const Engagements = () => (
+  <section id="pricing" className="border-t border-border bg-muted py-20 md:py-28">
+    <Container>
       <SectionHeader
         eyebrow="Custom builds"
         title="Need something of your own? We build that too."
-        desc="Tell us what you need. You get a transparent, fixed quote after a free discovery call, and you own 100% of the code."
+        desc="Pick the engagement that fits. You get a transparent, fixed quote after a free discovery call, and you own 100% of the code."
       />
-      <a
-        href="#contact"
-        className="inline-flex h-12 shrink-0 items-center justify-center gap-2 self-start rounded-md bg-primary px-6 text-[15px] font-medium text-primary-foreground hover:bg-primary/90 md:self-auto"
-      >
-        Tell us what you need <ArrowRight className="h-4 w-4" />
-      </a>
+      <div className="mt-12 grid gap-4 lg:grid-cols-3">
+        {engagements.map((e) => (
+          <div
+            key={e.name}
+            className={`flex flex-col rounded-2xl bg-white p-7 ${
+              e.highlight ? "border-2 border-primary" : "border border-border"
+            }`}
+          >
+            <p className="text-sm font-medium text-primary">{e.tagline}</p>
+            <h3 className="mt-1 text-xl font-semibold tracking-[-0.015em]">{e.name}</h3>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{e.desc}</p>
+            <ul className="mt-6 flex-1 space-y-2.5 border-t border-border pt-6 text-sm">
+              {e.features.map((f) => (
+                <li key={f} className="flex items-start gap-2.5">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <a
+              href="#contact"
+              className={`mt-7 inline-flex h-10 items-center justify-center rounded-md text-sm font-medium ${
+                e.highlight ? "bg-primary text-primary-foreground hover:bg-primary/90" : "border border-border hover:bg-muted"
+              }`}
+            >
+              Get a quote
+            </a>
+          </div>
+        ))}
+      </div>
     </Container>
   </section>
 );
@@ -599,28 +761,24 @@ const CustomBuilds = () => (
 // ===== FAQ =====
 export const faqs = [
   {
-    q: "How much does it cost?",
-    a: "It depends on the product and the size of your business, such as the number of users or branches. Book a demo and we'll share a clear quote for your setup.",
+    q: "How do you charge for projects?",
+    a: "Most engagements are fixed-scope sprints with a clear deliverable, or monthly product pods for ongoing work. We share a transparent quote after the discovery call.",
   },
   {
-    q: "Can you move our existing data?",
-    a: "Yes. Our team moves your data from spreadsheets or your old software as part of getting you set up.",
+    q: "Do we own the code and IP?",
+    a: "Yes, 100%. Everything is delivered into your repository under your name, with full documentation and handover support.",
   },
   {
-    q: "Who handles hosting, updates and support?",
-    a: "We do. Hosting, updates and day-to-day support stay with CodingRoof, so your team can focus on running the business.",
-  },
-  {
-    q: "Can we use more than one product?",
-    a: "Yes. Start with the product you need most and add others as you grow.",
-  },
-  {
-    q: "Do you build custom software?",
-    a: "Yes. Tell us what you need and we'll share a transparent, fixed quote after a free discovery call. You own 100% of the code, delivered with full documentation and handover support.",
+    q: "What stack do you build on?",
+    a: "TypeScript, React, Node, Postgres and modern cloud infrastructure (AWS, GCP or managed platforms). We pick proven tools that scale.",
   },
   {
     q: "Can you take over an existing product?",
     a: "Yes. We routinely audit, stabilise and modernise existing codebases before adding new capabilities on top.",
+  },
+  {
+    q: "How quickly can we start?",
+    a: "Usually within 1–2 weeks of the discovery call, depending on team availability. Urgent projects can sometimes start sooner.",
   },
 ];
 
@@ -656,7 +814,7 @@ const Faq = () => {
                     <Plus className="h-4 w-4 shrink-0 text-muted-foreground" />
                   )}
                 </button>
-                {isOpen && <p className="-mt-1 pb-5 pr-10 text-[15px] leading-relaxed text-muted-foreground">{f.a}</p>}
+                {isOpen && <p className="-mt-1 pb-5 pr-10 text-sm leading-relaxed text-muted-foreground">{f.a}</p>}
               </div>
             );
           })}
@@ -679,11 +837,11 @@ const LandingPage = () => {
       <AiHelpers />
       <Industries />
       <Principles />
-      <CustomBuilds />
+      <Engagements />
       <Faq />
       <Cta
         title="See how CodingRoof fits your business."
-        desc="Tell us a little about how you work today and we'll set up a demo of the product that fits, or scope a custom build."
+        desc="Tell us how you work today. We'll walk you through the right product, or come back with a roadmap, timeline and ROI estimate for a custom build."
       />
     </main>
     <Footer />
