@@ -338,3 +338,13 @@ html.lenis.lenis-smooth {
     transform: none !important;
   }
 }
+
+/* Hero showcase: active tab progress bar */
+@keyframes cr-tab-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

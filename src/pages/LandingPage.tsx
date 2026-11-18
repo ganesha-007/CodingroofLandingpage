@@ -3,6 +3,7 @@ import { ArrowRight, Check, Compass, Layers, LineChart, Minus, Plus, Rocket, Shi
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { motion, type MotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { categories, products, productBySlug, type Product } from "@/data/products";
+import { HeroShowcase } from "@/components/HeroShowcase";
 import {
   AiHelperGrid,
   CONTACT_EMAIL,
@@ -20,17 +21,22 @@ const Highlight = ({ children }: { children: ReactNode }) => (
   <span className="relative inline-block whitespace-nowrap">
     <svg
       aria-hidden
-      viewBox="0 0 300 60"
+      viewBox="0 0 300 40"
       preserveAspectRatio="none"
-      className="absolute -left-[2%] bottom-[0.08em] h-[0.42em] w-[104%]"
+      className="absolute -left-[0.06em] bottom-[0.1em] h-[0.46em] w-[calc(100%+0.12em)] -rotate-[0.6deg]"
     >
+      <defs>
+        <linearGradient id="hl-blue" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="hsl(218 90% 86%)" />
+          <stop offset="1" stopColor="hsl(205 90% 86%)" />
+        </linearGradient>
+      </defs>
       <path
-        d="M6 34 C 80 24, 200 22, 294 28 C 210 36, 110 44, 10 46"
+        d="M8 24 C 90 17, 200 15, 292 20"
         fill="none"
-        stroke="hsl(218 85% 88%)"
-        strokeWidth="20"
+        stroke="url(#hl-blue)"
+        strokeWidth="28"
         strokeLinecap="round"
-        strokeLinejoin="round"
       />
     </svg>
     <span className="relative">{children}</span>
@@ -38,122 +44,38 @@ const Highlight = ({ children }: { children: ReactNode }) => (
 );
 
 // ===== Hero =====
-const sampleLoans = [
-  { id: "GL-1042", name: "R. Kumar", weight: "24.5 g", amount: "₹1,20,000", status: "Active" },
-  { id: "GL-1041", name: "S. Priya", weight: "12.0 g", amount: "₹58,500", status: "Renewal due" },
-  { id: "GL-1040", name: "M. Joseph", weight: "40.2 g", amount: "₹1,96,000", status: "Active" },
-  { id: "GL-1039", name: "A. Fathima", weight: "8.8 g", amount: "₹42,000", status: "Closed" },
-];
-
-const statusClass: Record<string, string> = {
-  Active: "bg-emerald-50 text-emerald-700",
-  "Renewal due": "bg-amber-50 text-amber-700",
-  Closed: "bg-slate-100 text-slate-600",
-};
-
-/** Illustrative product UI built in code (no screenshots yet). Sample data only. */
-const ProductPreview = () => (
-  <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-[0_30px_80px_-30px_rgba(15,23,42,0.28)]">
-    <div className="flex items-center gap-2 border-b border-border bg-muted/60 px-4 py-2.5">
-      <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
-      <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
-      <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
-      <span className="ml-3 text-xs text-muted-foreground">app.codingroof.com / gold-loan</span>
-    </div>
-    <div className="grid md:grid-cols-[200px_1fr]">
-      <aside className="hidden md:block border-r border-border bg-muted/40 p-3">
-        <p className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Products</p>
-        <ul className="space-y-0.5">
-          {products.map((p) => (
-            <li
-              key={p.slug}
-              className={`flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] ${
-                p.slug === "gold-loan" ? "bg-white font-medium text-foreground shadow-sm ring-1 ring-border" : "text-muted-foreground"
-              }`}
-            >
-              <img src={p.logo} alt="" className="h-4 w-4" />
-              {p.name}
-            </li>
-          ))}
-        </ul>
-      </aside>
-      <div className="p-4 md:p-6">
-        <div className="flex items-center gap-3">
-          <ProductTile src={productBySlug["gold-loan"].logo} name="Gold Loan" size="sm" />
-          <div>
-            <p className="text-sm font-semibold">Gold Loan</p>
-            <p className="text-xs text-muted-foreground">Branch overview · Today</p>
-          </div>
-        </div>
-        <div className="mt-5 grid grid-cols-3 gap-2 md:gap-3">
-          {[
-            ["Active loans", "1,284"],
-            ["Gold pledged", "18.6 kg"],
-            ["Interest due", "₹3.4 L"],
-          ].map(([k, v]) => (
-            <div key={k} className="rounded-lg border border-border p-2.5 md:p-3">
-              <p className="text-[11px] text-muted-foreground">{k}</p>
-              <p className="mt-1 text-base md:text-lg font-semibold tracking-tight">{v}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 overflow-hidden rounded-lg border border-border">
-          <div className="grid grid-cols-[1fr_1fr_auto] md:grid-cols-[80px_1fr_70px_1fr_auto] gap-3 bg-muted/60 px-3 py-2 text-[11px] font-medium text-muted-foreground">
-            <span className="hidden md:block">Loan</span>
-            <span>Customer</span>
-            <span className="hidden md:block">Weight</span>
-            <span>Amount</span>
-            <span>Status</span>
-          </div>
-          {sampleLoans.map((l) => (
-            <div
-              key={l.id}
-              className="grid grid-cols-[1fr_1fr_auto] md:grid-cols-[80px_1fr_70px_1fr_auto] items-center gap-3 border-t border-border px-3 py-2.5 text-[12.5px]"
-            >
-              <span className="hidden md:block font-mono text-[11.5px] text-muted-foreground">{l.id}</span>
-              <span className="font-medium">{l.name}</span>
-              <span className="hidden md:block text-muted-foreground">{l.weight}</span>
-              <span>{l.amount}</span>
-              <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${statusClass[l.status]}`}>{l.status}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
 const Hero = () => (
-  <section className="relative">
+  <section className="relative overflow-x-clip">
+    {/* Faint grid that fades out, plus a soft blue wash */}
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[linear-gradient(180deg,hsl(216_80%_97%)_0%,#fff_100%)]"
+      className="pointer-events-none absolute inset-x-0 top-0 h-[760px] bg-[linear-gradient(to_right,hsl(218_40%_92%)_1px,transparent_1px),linear-gradient(to_bottom,hsl(218_40%_92%)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,#000_40%,transparent_100%)]"
     />
-    <Container className="relative pt-16 md:pt-24">
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(60%_70%_at_50%_0%,hsl(216_90%_96%),transparent)]"
+    />
+    <Container className="relative pt-14 pb-6 md:pt-20">
       <div className="mx-auto max-w-3xl text-center">
         <Link
           to="/products"
-          className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-white py-1 pl-1 pr-3 text-xs font-medium text-muted-foreground shadow-sm hover:text-foreground"
         >
-          <span className="flex -space-x-1">
-            {["funnello", "vector", "gold-loan"].map((s) => (
-              <img key={s} src={productBySlug[s].logo} alt="" className="h-4 w-4 rounded-full bg-white ring-2 ring-white" />
-            ))}
-          </span>
-          {products.length} products, one platform
+          <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-semibold text-primary-foreground">New</span>
+          Funnello CRM and Vector are now part of the suite
           <ArrowRight className="h-3 w-3" />
         </Link>
-        <h1 className="mt-6 text-[40px] md:text-[64px] font-semibold tracking-[-0.035em] leading-[1.04] text-foreground text-balance">
+        <h1 className="mt-7 text-[40px] md:text-[68px] font-semibold tracking-[-0.04em] leading-[1.02] text-foreground text-balance">
           The software your <Highlight>business</Highlight> runs on.
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-base md:text-lg leading-relaxed text-muted-foreground text-balance">
-          Ready-to-run products for lending, banking, retail, healthcare supply, print and more, plus custom
-          builds when you need something of your own.
+          {products.length} ready-to-run products for sales, projects, lending, retail and more, with AI built in. Plus
+          custom builds when you need something of your own.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             to="/products"
-            className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow-[0_8px_20px_-8px_rgba(36,99,209,0.6)] hover:bg-primary/90"
           >
             Explore products <ArrowRight className="h-4 w-4" />
           </Link>
@@ -165,8 +87,8 @@ const Hero = () => (
           </a>
         </div>
       </div>
-      <div className="mx-auto mt-14 md:mt-16 max-w-5xl">
-        <ProductPreview />
+      <div className="mx-auto mt-14 max-w-5xl md:mt-16">
+        <HeroShowcase />
       </div>
     </Container>
   </section>
@@ -273,14 +195,41 @@ const AiHelpers = () => (
 );
 
 // ===== Industries =====
+// Photos are picked up automatically from src/assets/industries/<slug>.(jpg|jpeg|png|webp).
+const industryPhotos = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<string>("../assets/industries/*.{jpg,jpeg,png,webp}", { eager: true, import: "default" })
+  ).map(([path, url]) => [path.split("/").pop()!.replace(/\.\w+$/, ""), url])
+) as Record<string, string>;
+
 const industries = [
-  { name: "Lending & finance", desc: "Pledges, deposits, loans and ledgers with full audit trails.", products: ["gold-loan", "banking"] },
-  { name: "Healthcare supply", desc: "Batch, expiry and reorder control for medical distributors.", products: ["surgicals"] },
-  { name: "Retail & personal care", desc: "Counters, appointments, stock and repeat customers.", products: ["retail", "salon"] },
-  { name: "Manufacturing & textiles", desc: "Orders, production stages, inventory and accounts.", products: ["textile", "erp"] },
-  { name: "Print & packaging", desc: "Quote-to-delivery for print shops and converters.", products: ["print"] },
-  { name: "Field operations", desc: "Jobs, technicians and on-site service, tracked end to end.", products: ["field-service"] },
+  { slug: "lending", name: "Lending & finance", desc: "Pledges, deposits, loans and ledgers with full audit trails.", products: ["gold-loan", "banking"] },
+  { slug: "healthcare", name: "Healthcare supply", desc: "Batch, expiry and reorder control for medical distributors.", products: ["surgicals"] },
+  { slug: "retail", name: "Retail & personal care", desc: "Counters, appointments, stock and repeat customers.", products: ["retail", "salon"] },
+  { slug: "manufacturing", name: "Manufacturing & textiles", desc: "Orders, production stages, inventory and accounts.", products: ["textile", "erp"] },
+  { slug: "print", name: "Print & packaging", desc: "Quote-to-delivery for print shops and converters.", products: ["print"] },
+  { slug: "field", name: "Field operations", desc: "Jobs, technicians and on-site service, tracked end to end.", products: ["field-service"] },
 ];
+
+const ProductChips = ({ slugs, onPhoto = false }: { slugs: string[]; onPhoto?: boolean }) => (
+  <div className="flex flex-wrap gap-2">
+    {slugs.map((slug) => {
+      const p = productBySlug[slug];
+      return (
+        <Link
+          key={slug}
+          to={`/products#${slug}`}
+          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+            onPhoto ? "bg-white/95 shadow-sm hover:bg-white" : "border border-border hover:border-primary/40 hover:bg-accent"
+          }`}
+        >
+          <img src={p.logo} alt="" className="h-3.5 w-3.5 object-contain" />
+          {p.name}
+        </Link>
+      );
+    })}
+  </div>
+);
 
 const Industries = () => (
   <section id="industries" className="py-20 md:py-28">
@@ -290,24 +239,38 @@ const Industries = () => (
         title="Built around how your industry actually works."
         desc="Every product starts from the day-to-day of a real business, so your team recognises the workflow on day one."
       />
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {industries.map((it) => (
-          <div key={it.name} className="flex flex-col rounded-xl border border-border p-6">
-            <h3 className="text-base font-semibold">{it.name}</h3>
-            <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{it.desc}</p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {it.products.map((slug) => {
-                const p = productBySlug[slug];
-                return (
-                  <span key={slug} className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-xs font-medium">
-                    <img src={p.logo} alt="" className="h-3.5 w-3.5" />
-                    {p.name}
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {industries.map((it) => {
+          const photo = industryPhotos[it.slug];
+          return photo ? (
+            <article key={it.slug} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-white">
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                <img
+                  src={photo}
+                  alt={it.name}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                />
+                <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-slate-900/45 via-transparent to-transparent" />
+                <div className="absolute inset-x-4 bottom-4">
+                  <ProductChips slugs={it.products} onPhoto />
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-base font-semibold">{it.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{it.desc}</p>
+              </div>
+            </article>
+          ) : (
+            <article key={it.slug} className="flex flex-col rounded-2xl border border-border p-6">
+              <h3 className="text-base font-semibold">{it.name}</h3>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{it.desc}</p>
+              <div className="mt-5">
+                <ProductChips slugs={it.products} />
+              </div>
+            </article>
+          );
+        })}
       </div>
     </Container>
   </section>
