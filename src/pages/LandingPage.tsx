@@ -179,7 +179,6 @@ const Hero = () => (
 
 // ===== Stats =====
 export const stats = [
-  { stat: "3.4×", label: "Average ROI within 12 months" },
   { stat: "12+", label: "SaaS products shipped" },
   { stat: "14+", label: "Countries served" },
   { stat: "6 weeks", label: "From kickoff to MVP" },
@@ -188,16 +187,11 @@ export const stats = [
 const Stats = () => (
   <section className="py-16 md:py-20">
     <Container>
-      <dl className="grid grid-cols-2 md:grid-cols-4 overflow-hidden rounded-2xl border border-border">
+      <dl className="grid grid-cols-3 overflow-hidden rounded-2xl border border-border">
         {stats.map((s, i) => (
-          <div
-            key={s.label}
-            className={`p-6 md:p-8 ${i % 2 === 1 ? "border-l" : ""} ${i >= 2 ? "border-t md:border-t-0" : ""} ${
-              i === 2 ? "md:border-l" : ""
-            } border-border`}
-          >
-            <dt className="text-sm text-muted-foreground">{s.label}</dt>
-            <dd className="mt-2 text-3xl md:text-4xl font-semibold tracking-[-0.03em] text-foreground">{s.stat}</dd>
+          <div key={s.label} className={`flex flex-col p-4 sm:p-6 md:p-8 ${i > 0 ? "border-l" : ""} border-border`}>
+            <dt className="text-xs leading-snug text-muted-foreground sm:text-sm">{s.label}</dt>
+            <dd className="mt-auto whitespace-nowrap pt-2 text-xl sm:text-3xl md:text-4xl font-semibold tracking-[-0.03em] text-foreground">{s.stat}</dd>
           </div>
         ))}
       </dl>

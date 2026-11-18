@@ -1,14 +1,13 @@
 // Shared site chrome and building blocks for the landing and products pages.
 import logo from "@/assets/logo.webp";
 import { Link, useLocation } from "react-router-dom";
-import { ArrowRight, Menu, Minus, Plus, X } from "lucide-react";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ArrowRight, Check, Loader2, Menu, Minus, Plus, X } from "lucide-react";
+import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { aiHelpers, products } from "@/data/products";
 
 export const CONTACT_EMAIL = "hello@codingroof.com";
-export const DEMO_HREF = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Demo request")}`;
-export const demoHrefFor = (product: string) =>
-  `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`${product} demo`)}`;
+/** Opens the on-page demo form with this product preselected. */
+export const demoHrefFor = (product: string) => `?product=${encodeURIComponent(product)}#contact`;
 
 const navLinks = [
   { href: "/products", label: "Products" },
@@ -169,28 +168,152 @@ export const AiHelperGrid = () => (
   </div>
 );
 
-export const Cta = ({ title, desc }: { title: string; desc: string }) => (
-  <section id="contact" className="pb-20 md:pb-28">
-    <Container>
-      <div className="rounded-3xl bg-primary px-6 py-14 text-center md:px-16 md:py-20">
-        <h2 className="mx-auto max-w-2xl text-3xl md:text-[44px] font-semibold tracking-[-0.025em] leading-[1.1] text-white text-balance">
-          {title}
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-base md:text-lg leading-relaxed text-white/80">{desc}</p>
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a
-            href={DEMO_HREF}
-            className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-white px-6 text-sm font-medium text-primary hover:bg-white/90"
-          >
-            Book a demo <ArrowRight className="h-4 w-4" />
-          </a>
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-md border border-white/30 px-6 text-sm font-medium text-white hover:bg-white/10"
-          >
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY as string | undefined;
+const fieldClass =
+  "h-11 w-full rounded-md border border-border bg-white px-3 text-[15px] text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20";
+
+/** Demo request form. Sends to hello@codingroof.com via Web3Forms; without a key it falls back to the visitor's mail app. */
+export const DemoForm = () => {
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [product, setProduct] = useState("");
+
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get("product");
+    if (p) setProduct(p);
+  }, []);
+
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
+    if (data.botcheck) return;
+    const subject = `Demo request: ${data.name}${data.business ? ` (${data.business})` : ""}`;
+    if (!WEB3FORMS_KEY) {
+      const body = Object.entries(data)
+        .filter(([k, v]) => v && k !== "botcheck")
+        .map(([k, v]) => `${k}: ${v}`)
+        .join("\n");
+      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      return;
+    }
+    setStatus("sending");
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ access_key: WEB3FORMS_KEY, subject, from_name: "codingroof.com", ...data }),
+      });
+      const json = await res.json();
+      setStatus(json.success ? "sent" : "error");
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  if (status === "sent")
+    return (
+      <div className="flex min-h-[360px] flex-col items-center justify-center rounded-2xl bg-white p-8 text-center">
+        <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-accent text-primary">
+          <Check className="h-6 w-6" />
+        </span>
+        <p className="mt-4 text-lg font-semibold text-foreground">Thanks, we've got your request.</p>
+        <p className="mt-2 text-[15px] text-muted-foreground">We'll get back to you by email to set up your demo.</p>
+      </div>
+    );
+
+  return (
+    <form onSubmit={onSubmit} className="grid gap-4 rounded-2xl bg-white p-6 text-left md:p-8">
+      <input type="checkbox" name="botcheck" className="hidden" tabIndex={-1} autoComplete="off" />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="grid gap-1.5 text-sm font-medium text-foreground">
+          Name
+          <input name="name" required autoComplete="name" className={fieldClass} placeholder="Your name" />
+        </label>
+        <label className="grid gap-1.5 text-sm font-medium text-foreground">
+          Work email
+          <input name="email" type="email" required autoComplete="email" className={fieldClass} placeholder="you@company.com" />
+        </label>
+        <label className="grid gap-1.5 text-sm font-medium text-foreground">
+          <span>
+            Phone <span className="font-normal text-muted-foreground">(optional)</span>
+          </span>
+          <input name="phone" type="tel" autoComplete="tel" className={fieldClass} placeholder="+91" />
+        </label>
+        <label className="grid gap-1.5 text-sm font-medium text-foreground">
+          Interested in
+          <select name="business" value={product} onChange={(e) => setProduct(e.target.value)} className={fieldClass}>
+            <option value="">Choose a product</option>
+            {products.map((p) => (
+              <option key={p.slug} value={p.name}>
+                {p.name} ({p.tag})
+              </option>
+            ))}
+            <option value="Custom software">Custom software</option>
+            <option value="Not sure yet">Not sure yet</option>
+          </select>
+        </label>
+      </div>
+      <label className="grid gap-1.5 text-sm font-medium text-foreground">
+        <span>
+          Tell us about your business <span className="font-normal text-muted-foreground">(optional)</span>
+        </span>
+        <textarea
+          name="message"
+          rows={3}
+          className={`${fieldClass} h-auto py-2.5`}
+          placeholder="What you do, how many branches or users, what you use today"
+        />
+      </label>
+      <button
+        type="submit"
+        disabled={status === "sending"}
+        className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-primary px-6 text-[15px] font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-70"
+      >
+        {status === "sending" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+        Book my demo
+      </button>
+      {status === "error" && (
+        <p className="text-sm text-red-600">
+          Something went wrong. Please email us at{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`} className="underline">
             {CONTACT_EMAIL}
           </a>
+          .
+        </p>
+      )}
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        By submitting, you agree to our{" "}
+        <Link to="/privacy" className="underline hover:text-foreground">
+          Privacy Policy
+        </Link>
+        . We only use your details to reply to this request.
+      </p>
+    </form>
+  );
+};
+
+export const Cta = ({ title, desc }: { title: string; desc: string }) => (
+  <section id="contact" className="scroll-mt-20 pb-20 md:pb-28">
+    <Container>
+      <div className="grid gap-10 rounded-3xl bg-primary px-6 py-12 md:grid-cols-2 md:items-center md:gap-14 md:px-14 md:py-16">
+        <div className="text-white">
+          <h2 className="max-w-md text-3xl md:text-[44px] font-semibold tracking-[-0.025em] leading-[1.1] text-balance">{title}</h2>
+          <p className="mt-4 max-w-md text-base md:text-lg leading-relaxed text-white">{desc}</p>
+          <ul className="mt-8 space-y-3 text-[15px]">
+            {["A walkthrough of the product that fits your business", "Answers on setup, data migration and support", "A clear quote for your setup"].map((t) => (
+              <li key={t} className="flex items-start gap-3">
+                <Check className="mt-0.5 h-5 w-5 shrink-0" />
+                {t}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-8 text-[15px] text-white">
+            Prefer email?{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="font-medium underline underline-offset-4">
+              {CONTACT_EMAIL}
+            </a>
+          </p>
         </div>
+        <DemoForm />
       </div>
     </Container>
   </section>
@@ -264,12 +387,17 @@ export const Footer = () => (
         <p className="text-sm font-semibold">Contact</p>
         <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
           <li><a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-foreground">{CONTACT_EMAIL}</a></li>
-          <li><a href={DEMO_HREF} className="hover:text-foreground">Book a demo</a></li>
+          <li><Link to="/#contact" className="hover:text-foreground">Book a demo</Link></li>
         </ul>
       </div>
     </Container>
-    <Container className="border-t border-border py-6 text-xs text-muted-foreground">
-      © {new Date().getFullYear()} CodingRoof. All rights reserved.
+    <Container className="flex flex-col gap-3 border-t border-border py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <span>© {new Date().getFullYear()} CodingRoof. All rights reserved.</span>
+      <span className="flex gap-5">
+        <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
+        <Link to="/terms" className="hover:text-foreground">Terms of Use</Link>
+        <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-foreground">Contact</a>
+      </span>
     </Container>
   </footer>
 );
