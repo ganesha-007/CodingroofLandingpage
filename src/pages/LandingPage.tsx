@@ -326,81 +326,148 @@ const principles: { title: string; desc: string; icon: LucideIcon }[] = [
 ];
 
 interface Anchor {
-  x: number;
-  top: number;
-  bottom: number;
+  xIn: number;
+  xOut: number;
+  y: number;
 }
 
+/**
+ * Original hand-drawn ink ribbon (restored): wobbly bezier segments from the
+ * right edge of each card to the left edge of the next, drawn in on scroll.
+ * Only the colour changed (blue instead of black).
+ */
 const InkConnector = ({
   itemRefs,
   containerRef,
   sectionRef,
+  active,
 }: {
   itemRefs: React.MutableRefObject<Array<HTMLDivElement | null>>;
   containerRef: React.RefObject<HTMLDivElement | null>;
   sectionRef: React.RefObject<HTMLElement | null>;
+  active: number;
 }) => {
   const reduce = useReducedMotion();
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [anchors, setAnchors] = useState<Anchor[]>([]);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    let raf = 0;
     const measure = () => {
       const container = containerRef.current;
       if (!container) return;
-      const c = container.getBoundingClientRect();
+      const cRect = container.getBoundingClientRect();
       const next: Anchor[] = [];
       itemRefs.current.forEach((el) => {
-        const card = el?.querySelector<HTMLElement>("[data-sticker-card]");
-        if (!card) return;
+        if (!el) return;
+        const card = el.querySelector<HTMLElement>("[data-sticker-card]") ?? el;
         const r = card.getBoundingClientRect();
-        next.push({ x: r.left - c.left + r.width / 2, top: r.top - c.top, bottom: r.bottom - c.top });
+        // Line always enters from the LEFT edge and exits from the RIGHT edge of every card.
+        next.push({ xIn: r.left - cRect.left, xOut: r.right - cRect.left, y: r.top - cRect.top + r.height / 2 });
       });
       setSize({ w: container.clientWidth, h: container.clientHeight });
       setAnchors(next);
     };
     const schedule = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(measure);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(measure);
     };
     schedule();
     const ro = new ResizeObserver(schedule);
     if (containerRef.current) ro.observe(containerRef.current);
+    itemRefs.current.forEach((el) => el && ro.observe(el));
+    window.addEventListener("resize", schedule);
+    // re-measure once fonts/images settle
+    const t = window.setTimeout(schedule, 250);
     return () => {
       ro.disconnect();
-      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", schedule);
+      window.clearTimeout(t);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [containerRef, itemRefs]);
 
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start 40%", "end 80%"] });
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start 30%", "end 80%"] });
 
-  if (!size.w || anchors.length < 2) return null;
+  // Separate wobbly cubic-bezier segments: card[i].right -> card[i+1].left.
+  const buildSegments = (pts: Anchor[]) => {
+    if (pts.length < 2) return [];
+    const phi = 0.61803398875;
+    const jitter = (i: number, seed: number) => ((((i + 1) * phi + seed) % 1) - 0.5) * 14; // ±7px
+    const segments: string[] = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i];
+      const b = pts[i + 1];
+      const ax = a.xOut;
+      const ay = a.y;
+      const bx = b.xIn;
+      const by = b.y;
+      const dy = by - ay;
+      const horiz = Math.max(60, Math.abs(bx - ax) * 0.55);
+      // Always leave to the right, arrive from the left -> preserves the curvy zig-zag.
+      const c1x = ax + horiz + jitter(i, 0.13);
+      const c1y = ay + dy * 0.15 + jitter(i, 0.41);
+      const c2x = bx - horiz + jitter(i, 0.77);
+      const c2y = by - dy * 0.15 + jitter(i, 0.29);
+      segments.push(
+        `M ${ax.toFixed(1)} ${ay.toFixed(1)} C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${bx.toFixed(1)} ${by.toFixed(1)}`
+      );
+    }
+    return segments;
+  };
 
-  // Bottom-centre of each card to top-centre of the next: a soft S-curve.
-  const segments = anchors.slice(0, -1).map((a, i) => {
-    const b = anchors[i + 1];
-    const y1 = a.bottom + 6;
-    const y2 = b.top - 6;
-    const mid = (y2 - y1) * 0.55;
-    return `M ${a.x} ${y1} C ${a.x} ${y1 + mid}, ${b.x} ${y2 - mid}, ${b.x} ${y2}`;
-  });
+  const segments = buildSegments(anchors);
+
+  if (!size.w || !size.h || anchors.length < 2) {
+    return <div className="hidden md:block absolute inset-0 pointer-events-none" aria-hidden />;
+  }
 
   return (
     <svg
       width={size.w}
       height={size.h}
-      className="pointer-events-none absolute inset-0 hidden md:block"
-      style={{ overflow: "visible" }}
+      viewBox={`0 0 ${size.w} ${size.h}`}
+      className="hidden md:block absolute inset-0 pointer-events-none"
       aria-hidden
+      style={{ overflow: "visible" }}
     >
+      <defs>
+        <filter id="rough-ink" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" />
+          <feDisplacementMap in="SourceGraphic" scale="1.2" />
+        </filter>
+      </defs>
+
       {segments.map((d, i) => (
-        <InkSegment key={i} d={d} index={i} total={segments.length} progress={scrollYProgress} reduce={reduce} />
+        <InkSegment key={d} d={d} index={i} total={segments.length} progress={scrollYProgress} reduce={reduce} />
       ))}
+
       {anchors.map((a, i) => (
-        <g key={i} fill={BLUE_LINE}>
-          {i < anchors.length - 1 && <circle cx={a.x} cy={a.bottom + 6} r={3} />}
-          {i > 0 && <circle cx={a.x} cy={a.top - 6} r={3} />}
+        <g key={i}>
+          {i < anchors.length - 1 && (
+            <motion.circle
+              cx={a.xOut}
+              cy={a.y}
+              r={3}
+              fill={BLUE_LINE}
+              initial={{ opacity: 0, scale: 0.4 }}
+              animate={{ opacity: i <= active ? 1 : 0, scale: i <= active ? 1 : 0.4 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              style={{ transformOrigin: `${a.xOut}px ${a.y}px` }}
+            />
+          )}
+          {i > 0 && (
+            <motion.circle
+              cx={a.xIn}
+              cy={a.y}
+              r={3}
+              fill={BLUE_LINE}
+              initial={{ opacity: 0, scale: 0.4 }}
+              animate={{ opacity: i <= active ? 1 : 0, scale: i <= active ? 1 : 0.4 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              style={{ transformOrigin: `${a.xIn}px ${a.y}px` }}
+            />
+          )}
         </g>
       ))}
     </svg>
@@ -426,18 +493,38 @@ const InkSegment = ({
       d={d}
       fill="none"
       stroke={BLUE_LINE}
-      strokeOpacity={0.55}
-      strokeWidth={1.5}
+      strokeOpacity={0.6}
+      strokeWidth={1.75}
       strokeLinecap="round"
-      style={{ pathLength: reduce ? 1 : pathLength }}
+      strokeLinejoin="round"
+      filter="url(#rough-ink)"
+      style={reduce ? { pathLength: 1 } : { pathLength }}
+      initial={reduce ? false : { pathLength: 0 }}
     />
   );
 };
 
 const Principles = () => {
+  const [active, setActive] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const colRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    itemRefs.current.forEach((el, i) => {
+      if (!el) return;
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setActive(i);
+        },
+        { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
+      );
+      io.observe(el);
+      observers.push(io);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
 
   return (
     <section ref={sectionRef} className="overflow-x-clip border-t border-border py-20 md:py-28">
@@ -452,8 +539,8 @@ const Principles = () => {
               />
             </div>
           </div>
-          <div ref={colRef} className="relative flex flex-col gap-10 md:col-span-7 md:gap-20">
-            <InkConnector itemRefs={itemRefs} containerRef={colRef} sectionRef={sectionRef} />
+          <div ref={colRef} className="relative flex flex-col gap-10 md:col-span-7 md:gap-36">
+            <InkConnector itemRefs={itemRefs} containerRef={colRef} sectionRef={sectionRef} active={active} />
             {principles.map((p, i) => (
               <div
                 key={p.title}
