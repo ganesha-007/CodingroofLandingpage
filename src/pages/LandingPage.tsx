@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, Compass, Layers, LineChart, Minus, Plus, Rocket, ShieldCheck, Zap, type LucideIcon } from "lucide-react";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import { motion, type MotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { categories, products, productBySlug, type Product } from "@/data/products";
 import heroFilmMp4 from "@/assets/hero/hero-film.mp4";
@@ -18,41 +18,79 @@ import {
   useHashScroll,
 } from "@/components/site";
 
-/** Bold dry-brush highlight behind a word (hand-painted look, brand gold), swept in left to right. */
-const BRUSH_BRISTLES: [number, number, number, number, number][] = [
-  // x1, y1, x2, y2, width — frayed bristle ends on both sides
-  [372, 20, 394, 19, 8], [374, 33, 389, 33, 9], [372, 46, 397, 45, 10], [374, 60, 387, 61, 8], [372, 73, 395, 74, 9], [370, 84, 383, 85, 6],
-  [30, 22, 9, 23, 8], [28, 36, 14, 36, 9], [30, 50, 4, 51, 10], [28, 64, 15, 64, 8], [30, 77, 7, 78, 9],
+/**
+ * Paint-brush band painted behind the whole word (full width and height). Loaded where the brush lands,
+ * bristle streaks and torn edges from SVG noise, split dry bristles at the tail. Painted in left to
+ * right along the stroke. (Version 1: git tag version-1.)
+ */
+const BAND = "M16 22 C 14 10, 30 6, 60 8 C 150 4, 250 9, 340 5 C 362 4, 378 8, 386 14 C 392 34, 391 64, 387 84 C 380 93, 362 95, 340 94 C 250 97, 150 92, 60 96 C 32 97, 14 92, 12 76 C 10 58, 12 40, 16 22 Z";
+// Bristles running out of paint past the end: [x1, y1, x2, y2, width, opacity]
+const BAND_BRISTLES: [number, number, number, number, number, number][] = [
+  [350, 12, 392, 10, 7, 0.8], [356, 24, 398, 23, 8, 0.85], [350, 36, 388, 36, 6, 0.7], [354, 48, 399, 49, 9, 0.85],
+  [350, 60, 384, 61, 6, 0.65], [356, 72, 396, 73, 8, 0.8], [350, 84, 386, 86, 6, 0.7], [354, 93, 376, 94, 5, 0.55],
 ];
 const Highlight = ({ children }: { children: ReactNode }) => {
   const reduce = useReducedMotion();
+  const uid = useId().replace(/:/g, "");
+  const texture = `band-tex-${uid}`;
+  const reveal = `band-rev-${uid}`;
+  const paint = `band-paint-${uid}`;
   return (
-    <span className="relative inline-block whitespace-nowrap">
-      <motion.svg
+    <span className="relative inline-block whitespace-nowrap px-[0.06em]">
+      <svg
         aria-hidden
         viewBox="0 0 400 100"
         preserveAspectRatio="none"
-        className="absolute -left-[0.1em] -bottom-[0.05em] h-[0.8em] w-[calc(100%+0.2em)] -rotate-[1deg]"
-        initial={reduce ? false : { clipPath: "inset(0 100% 0 0)" }}
-        animate={{ clipPath: "inset(0 0% 0 0)" }}
-        transition={{ delay: 0.35, duration: 0.65, ease: [0.65, 0, 0.35, 1] }}
+        className="absolute -left-[0.12em] -top-[0.02em] h-[calc(100%+0.1em)] w-[calc(100%+0.32em)] -rotate-[1deg] overflow-visible"
       >
-        <path
-          fill="#F6C23E"
-          d="M24 18 C 90 12, 170 15, 250 12 C 300 10, 345 13, 376 14 C 381 30, 380 60, 377 86 C 320 90, 250 87, 180 90 C 120 92, 70 88, 22 90 C 19 66, 20 40, 24 18 Z"
-        />
-        <g stroke="#F6C23E" strokeLinecap="round">
-          {BRUSH_BRISTLES.map(([x1, y1, x2, y2, w], i) => (
-            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} strokeWidth={w} />
-          ))}
+        <defs>
+          <filter id={texture} x="-3%" y="-15%" width="106%" height="130%">
+            {/* Bristle streaks: solid paint with fine lighter lines along the stroke */}
+            <feTurbulence type="fractalNoise" baseFrequency="0.004 0.32" numOctaves="2" seed="11" result="streaks" />
+            <feColorMatrix in="streaks" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.6 0 0 0 -0.4" result="streakMask" />
+            <feComposite in="SourceGraphic" in2="streakMask" operator="in" result="streaked" />
+            {/* Torn edges */}
+            <feTurbulence type="fractalNoise" baseFrequency="0.03 0.08" numOctaves="3" seed="5" result="grain" />
+            <feDisplacementMap in="streaked" in2="grain" scale="8" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          {/* Deeper gold where the brush is loaded, brighter and drier toward the tail */}
+          <linearGradient id={paint} x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stopColor="#F2B01E" />
+            <stop offset="0.4" stopColor="#F6C23E" />
+            <stop offset="0.85" stopColor="#F9CC52" />
+            <stop offset="1" stopColor="#FBD466" stopOpacity="0.7" />
+          </linearGradient>
+          <mask id={reveal} maskUnits="userSpaceOnUse" x="-30" y="-30" width="460" height="160">
+            <motion.path
+              d="M-10 50 L 410 50"
+              stroke="#fff"
+              strokeWidth="160"
+              fill="none"
+              initial={reduce ? false : { pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              // Human pace: the brush presses down, travels steadily, then eases off as it lifts
+              transition={{ delay: 0.5, duration: 1.6, ease: [0.45, 0.05, 0.3, 1] }}
+            />
+          </mask>
+        </defs>
+        <g filter={`url(#${texture})`} mask={`url(#${reveal})`}>
+          <path d={BAND} fill={`url(#${paint})`} />
+          {/* Loaded blob where the brush first touches */}
+          <ellipse cx="26" cy="52" rx="18" ry="45" fill="#F2B01E" />
+          <g stroke="#F8C848" strokeLinecap="round">
+            {BAND_BRISTLES.map(([x1, y1, x2, y2, w, o], i) => (
+              <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} strokeWidth={w} opacity={o} />
+            ))}
+          </g>
+          {/* Ridges of thicker paint, and a wet sheen near the top */}
+          <g fill="none" strokeLinecap="round">
+            <path d="M30 14 C 130 10, 250 14, 372 10" stroke="#E6A314" strokeWidth="4" opacity="0.5" />
+            <path d="M28 88 C 140 91, 250 86, 366 89" stroke="#E09A0E" strokeWidth="4" opacity="0.5" />
+            <path d="M40 62 C 150 65, 250 60, 360 63" stroke="#E9AB22" strokeWidth="2.5" opacity="0.35" />
+            <path d="M44 30 C 150 27, 250 31, 356 28" stroke="#FFDD7A" strokeWidth="4" opacity="0.55" />
+          </g>
         </g>
-        {/* dry-brush streaks for texture */}
-        <g stroke="#E9B22E" strokeLinecap="round" fill="none">
-          <path d="M40 30 C 140 26, 250 28, 360 26" strokeWidth="3" opacity="0.35" />
-          <path d="M52 58 C 150 61, 260 57, 352 60" strokeWidth="2.5" opacity="0.3" />
-          <path d="M64 76 C 160 73, 250 76, 340 73" strokeWidth="2" opacity="0.3" />
-        </g>
-      </motion.svg>
+      </svg>
       <span className="relative">{children}</span>
     </span>
   );
