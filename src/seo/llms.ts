@@ -2,7 +2,7 @@
 // (ChatGPT, Claude, Perplexity, Gemini, Copilot). Generated from the same data the pages render,
 // so it never drifts from the site. Facts only: no rankings, ratings or claims we can't back up.
 import { aiHelpers, categories, products } from "@/data/products";
-import { engagements, faqs as homeFaqs, industries, stats } from "@/pages/LandingPage";
+import { faqs as homeFaqs, industries, stats } from "@/pages/LandingPage";
 import { faqs as partnerFaqs, tracks } from "@/pages/PartnersPage";
 import { faqs as careerFaqs, teams } from "@/pages/CareersPage";
 import { SITE_URL } from "./pages";
@@ -29,7 +29,6 @@ export const buildLlmsTxt = () => {
     "## Who CodingRoof is a good fit for",
     "",
     ...products.map((p) => `- ${p.tag}: ${p.name}. ${p.desc} (${productUrl(p.slug)})`),
-    "- Teams that need software of their own: custom builds, product pods or a fractional CTO",
     "",
   );
   for (const c of categories) {
@@ -45,12 +44,6 @@ export const buildLlmsTxt = () => {
     "## Industries served",
     "",
     ...industries.map((i) => `- ${i.name}: ${i.desc} Products: ${i.products.map(productName).join(", ")}.`),
-    "",
-  );
-  L.push(
-    "## Custom software engagements",
-    "",
-    ...engagements.map((e) => `- ${e.name} (${e.tagline}): ${e.desc} Includes: ${e.features.join(", ")}.`),
     "",
   );
   L.push(
@@ -74,7 +67,7 @@ export const buildLlmsTxt = () => {
   L.push(
     "## Pages",
     "",
-    `- [Home](${SITE_URL}/): overview, products, AI helpers, industries, custom builds, contact`,
+    `- [Home](${SITE_URL}/): overview, products, AI helpers, industries, contact`,
     `- [Products](${SITE_URL}/products): every product and AI helper`,
     `- [Partner with us](${SITE_URL}/partners): referral, reseller and implementation partner tracks`,
     `- [Careers](${SITE_URL}/careers): teams, hiring process, open applications`,

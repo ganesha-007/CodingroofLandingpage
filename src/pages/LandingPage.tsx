@@ -685,73 +685,6 @@ const StickerCard = ({ index, title, desc, icon: Icon }: { index: number; title:
   </div>
 );
 
-// ===== Engagements =====
-export const engagements = [
-  {
-    name: "Sprint",
-    tagline: "Fixed scope, fixed price",
-    desc: "For MVPs, audits or focused launches with a defined outcome in 2–8 weeks.",
-    features: ["Discovery and roadmap", "Design and build", "Production launch"],
-    highlight: false,
-  },
-  {
-    name: "Product pod",
-    tagline: "Monthly retainer",
-    desc: "A senior, embedded squad shipping continuously alongside your team.",
-    features: ["Designer, 2–3 engineers and a PM", "Weekly demos and roadmap", "Direct Slack channel", "ROI reporting"],
-    highlight: true,
-  },
-  {
-    name: "Fractional CTO",
-    tagline: "Strategy and oversight",
-    desc: "Senior technical leadership for teams that need direction more than hands.",
-    features: ["Architecture review", "Hiring and process", "Vendor management"],
-    highlight: false,
-  },
-];
-
-const Engagements = () => (
-  <section id="pricing" className="border-t border-border bg-muted py-20 md:py-28">
-    <Container>
-      <SectionHeader
-        eyebrow="Custom builds"
-        title="Need something of your own? We build that too."
-        desc="Pick the engagement that fits. You get a transparent, fixed quote after a free discovery call, and you own 100% of the code."
-      />
-      <div className="mt-12 grid gap-4 lg:grid-cols-3">
-        {engagements.map((e) => (
-          <div
-            key={e.name}
-            className={`flex flex-col rounded-2xl bg-white p-7 ${
-              e.highlight ? "border-2 border-primary" : "border border-border"
-            }`}
-          >
-            <p className="text-sm font-medium text-primary">{e.tagline}</p>
-            <h3 className="mt-1 text-xl font-semibold tracking-[-0.015em]">{e.name}</h3>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{e.desc}</p>
-            <ul className="mt-6 flex-1 space-y-2.5 border-t border-border pt-6 text-sm">
-              {e.features.map((f) => (
-                <li key={f} className="flex items-start gap-2.5">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <a
-              href="#contact"
-              className={`mt-7 inline-flex h-10 items-center justify-center rounded-md text-sm font-medium ${
-                e.highlight ? "bg-primary text-primary-foreground hover:bg-primary/90" : "border border-border hover:bg-muted"
-              }`}
-            >
-              Get a quote
-            </a>
-          </div>
-        ))}
-      </div>
-    </Container>
-  </section>
-);
-
 // ===== FAQ =====
 export const faqs = [
   {
@@ -831,7 +764,6 @@ const LandingPage = () => {
       <AiHelpers />
       <Industries />
       <Principles />
-      <Engagements />
       <Faq />
       <Cta
         title="See how CodingRoof fits your business."
