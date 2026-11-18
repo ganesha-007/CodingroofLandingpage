@@ -99,7 +99,7 @@ Never put user data or tracking IDs in URLs. Keep URLs lowercase, hyphenated and
 | 3 | Search Console, **URL Inspection**: request indexing for `/`, `/products`, `/partners`, `/careers` | Replaces the stale old title, snippet and globe icon in results faster (normally takes days to a few weeks) |
 | 4 | **Bing Webmaster Tools**: import from Search Console | Bing + ChatGPT search + DuckDuckGo use Bing's index |
 | 5 | **Google Business Profile** for CodingRoof (office address, phone, hours, website, logo, category "Software company") | Brand panel and local "software company near me" results |
-| 6 | Fix **www.codingroof.com** (Cloudflare 301 redirect to `https://codingroof.com`) | `www` currently errors (525); it must redirect, not fail |
+| 6 | ~~Fix **www.codingroof.com**~~ **Done 2026-11-18**: Cloudflare Redirect Rules "Redirect www to codingroof.com" (https) and "Redirect http www to codingroof.com" (http), 301, path and query kept | One canonical host |
 | 7 | Add the same logo, name and URL on LinkedIn, Crunchbase, GitHub org, Clutch/GoodFirms profiles | Consistent entity signals and first backlinks |
 | 8 | Link to `codingroof.com/products#<product>` from each product's own app domain (funnello.codingroof.com, vector.codingroof.com, ...) footer | Internal authority flow across subdomains |
 
