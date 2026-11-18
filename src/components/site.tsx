@@ -113,9 +113,6 @@ export const Navbar = () => {
         </nav>
 
         <div className="hidden lg:flex items-center gap-2">
-          <Link to="/login" className="inline-flex h-9 items-center rounded-md px-3 text-sm font-medium hover:bg-muted">
-            Sign in
-          </Link>
           <Link
             to={demoTo}
             className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
@@ -142,10 +139,7 @@ export const Navbar = () => {
                 {l.label}
               </Link>
             ))}
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-md border border-border font-medium">
-                Sign in
-              </Link>
+            <div className="mt-2 grid gap-2">
               <Link
                 to={demoTo}
                 onClick={() => setOpen(false)}
@@ -271,7 +265,6 @@ export const Footer = () => (
         <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
           <li><a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-foreground">{CONTACT_EMAIL}</a></li>
           <li><a href={DEMO_HREF} className="hover:text-foreground">Book a demo</a></li>
-          <li><Link to="/login" className="hover:text-foreground">Sign in</Link></li>
         </ul>
       </div>
     </Container>

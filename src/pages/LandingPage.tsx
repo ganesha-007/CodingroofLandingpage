@@ -152,8 +152,8 @@ const Hero = () => (
           The software your <Highlight>business</Highlight> runs on.
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-base md:text-lg leading-relaxed text-muted-foreground text-balance">
-          {products.length} ready-to-run products for sales, projects, lending, retail and more, with AI built in. Plus
-          custom builds when you need something of your own.
+          From the first enquiry to the final payment, CodingRoof runs your billing, stock, customers and staff on one
+          platform built for your industry.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
