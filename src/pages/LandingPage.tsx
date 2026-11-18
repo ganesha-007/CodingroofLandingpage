@@ -231,50 +231,106 @@ const ProductChips = ({ slugs, onPhoto = false }: { slugs: string[]; onPhoto?: b
   </div>
 );
 
-const Industries = () => (
-  <section id="industries" className="py-20 md:py-28">
-    <Container>
-      <SectionHeader
-        eyebrow="Industries"
-        title="Built around how your industry actually works."
-        desc="Every product starts from the day-to-day of a real business, so your team recognises the workflow on day one."
-      />
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {industries.map((it) => {
+// Auto-scrolling strip: drifts slowly, pauses on hover/touch/focus, swipeable, static when reduced motion is on.
+const Industries = () => {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const paused = useRef(false);
+  const resumeTimer = useRef<number | undefined>(undefined);
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el || reduceMotion) return;
+    let raf = 0;
+    let last = performance.now();
+    let pos = el.scrollLeft;
+    const step = (t: number) => {
+      const dt = Math.min(t - last, 50);
+      last = t;
+      if (paused.current) {
+        pos = el.scrollLeft;
+      } else {
+        if (Math.abs(el.scrollLeft - pos) > 2) pos = el.scrollLeft; // user scrolled the strip
+        pos += dt * 0.035; // ~35px per second
+        const loop = el.scrollWidth / 2; // items are rendered twice
+        if (pos >= loop) pos -= loop;
+        el.scrollLeft = pos;
+      }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(resumeTimer.current);
+    };
+  }, [reduceMotion]);
+
+  const pause = () => {
+    window.clearTimeout(resumeTimer.current);
+    paused.current = true;
+  };
+  const resume = (delay = 0) => {
+    window.clearTimeout(resumeTimer.current);
+    resumeTimer.current = window.setTimeout(() => (paused.current = false), delay);
+  };
+
+  const items = reduceMotion ? industries : [...industries, ...industries];
+
+  return (
+    <section id="industries" className="py-20 md:py-28">
+      <Container>
+        <SectionHeader
+          eyebrow="Industries"
+          title="Built around how your industry actually works."
+          desc="Every product starts from the day-to-day of a real business, so your team recognises the workflow on day one."
+        />
+      </Container>
+      <div
+        ref={trackRef}
+        onMouseEnter={pause}
+        onMouseLeave={() => resume()}
+        onTouchStart={pause}
+        onTouchEnd={() => resume(2500)}
+        onFocus={pause}
+        onBlur={() => resume()}
+        className="mt-12 flex gap-5 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8 [mask-image:linear-gradient(to_right,transparent,black_3%,black_97%,transparent)]"
+      >
+        {items.map((it, i) => {
           const photo = industryPhotos[it.slug];
-          return photo ? (
-            <article key={it.slug} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-white">
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <img
-                  src={photo}
-                  alt={it.name}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                />
+          const copy = i >= industries.length;
+          return (
+            <article
+              key={`${it.slug}-${i}`}
+              aria-hidden={copy || undefined}
+              inert={copy || undefined}
+              className="group flex w-[280px] shrink-0 flex-col overflow-hidden rounded-2xl border border-border bg-white sm:w-[320px]"
+            >
+              <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+                {photo && (
+                  <img
+                    src={photo}
+                    alt={copy ? "" : it.name}
+                    loading="lazy"
+                    draggable={false}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  />
+                )}
                 <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-slate-900/45 via-transparent to-transparent" />
                 <div className="absolute inset-x-4 bottom-4">
                   <ProductChips slugs={it.products} onPhoto />
                 </div>
               </div>
-              <div className="p-6">
+              <div className="flex-1 p-6">
                 <h3 className="text-base font-semibold">{it.name}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{it.desc}</p>
-              </div>
-            </article>
-          ) : (
-            <article key={it.slug} className="flex flex-col rounded-2xl border border-border p-6">
-              <h3 className="text-base font-semibold">{it.name}</h3>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{it.desc}</p>
-              <div className="mt-5">
-                <ProductChips slugs={it.products} />
               </div>
             </article>
           );
         })}
       </div>
-    </Container>
-  </section>
-);
+    </section>
+  );
+};
 
 // ===== Principles (kept: sticker cards + ink connector, restyled in blue) =====
 const BLUE_LINE = "hsl(218 71% 48%)";
