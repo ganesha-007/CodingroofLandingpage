@@ -1,64 +1,20 @@
-import logo from "@/assets/logo.webp";
 import { Link } from "react-router-dom";
-import {
-  ArrowRight,
-  Bot,
-  Check,
-  Compass,
-  Layers,
-  LineChart,
-  Menu,
-  Mic,
-  Minus,
-  Plus,
-  Rocket,
-  ScanLine,
-  ShieldCheck,
-  Smile,
-  TrendingUp,
-  X,
-  Zap,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight, Check, Compass, Layers, LineChart, Minus, Plus, Rocket, ShieldCheck, Zap, type LucideIcon } from "lucide-react";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { motion, type MotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { products, productBySlug } from "@/data/products";
-
-const CONTACT_EMAIL = "hello@codingroof.com";
-const DEMO_HREF = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Demo request")}`;
-
-const navLinks = [
-  { href: "#products", label: "Products" },
-  { href: "#ai-helpers", label: "AI Helpers" },
-  { href: "#industries", label: "Industries" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#faq", label: "FAQ" },
-];
-
-// ===== Shared layout =====
-const Container = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
-  <div className={`mx-auto w-full max-w-6xl px-5 md:px-8 ${className}`}>{children}</div>
-);
-
-const SectionHeader = ({
-  eyebrow,
-  title,
-  desc,
-  center = false,
-}: {
-  eyebrow: string;
-  title: ReactNode;
-  desc?: ReactNode;
-  center?: boolean;
-}) => (
-  <div className={`max-w-2xl ${center ? "mx-auto text-center" : ""}`}>
-    <p className="text-sm font-semibold text-primary">{eyebrow}</p>
-    <h2 className="mt-3 text-3xl md:text-[40px] font-semibold tracking-[-0.025em] leading-[1.1] text-foreground text-balance">
-      {title}
-    </h2>
-    {desc && <p className="mt-4 text-base md:text-lg leading-relaxed text-muted-foreground">{desc}</p>}
-  </div>
-);
+import {
+  AiHelperGrid,
+  CONTACT_EMAIL,
+  Container,
+  Cta,
+  Footer,
+  Navbar,
+  ProductTile,
+  SectionHeader,
+  demoHrefFor,
+  useHashScroll,
+} from "@/components/site";
 
 /** Soft blue marker stroke behind a word (restyled from the original yellow scribble). */
 const Highlight = ({ children }: { children: ReactNode }) => (
@@ -81,100 +37,6 @@ const Highlight = ({ children }: { children: ReactNode }) => (
     <span className="relative">{children}</span>
   </span>
 );
-
-const ProductTile = ({ src, name, size = "md" }: { src: string; name: string; size?: "sm" | "md" }) => (
-  <span
-    className={`inline-flex shrink-0 items-center justify-center rounded-xl border border-border bg-white ${
-      size === "sm" ? "h-8 w-8 rounded-lg" : "h-12 w-12"
-    }`}
-  >
-    <img src={src} alt={`${name} logo`} className={size === "sm" ? "h-5 w-5" : "h-7 w-7"} />
-  </span>
-);
-
-// ===== Navbar =====
-const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  return (
-    <header
-      className={`sticky top-0 z-50 border-b transition-colors duration-200 ${
-        scrolled || open ? "border-border bg-white/90 backdrop-blur" : "border-transparent bg-white"
-      }`}
-    >
-      <Container className="flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="" className="h-8 w-auto" />
-          <span className="text-[15px] font-semibold tracking-[-0.01em]">CodingRoof</span>
-        </Link>
-
-        <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          {navLinks.map((l) => (
-            <a key={l.href} href={l.href} className="transition-colors hover:text-foreground">
-              {l.label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="hidden md:flex items-center gap-2">
-          <Link
-            to="/login"
-            className="inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-foreground hover:bg-muted"
-          >
-            Sign in
-          </Link>
-          <a
-            href="#contact"
-            className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            Book a demo
-          </a>
-        </div>
-
-        <button
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-md border border-border"
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-        </button>
-      </Container>
-
-      {open && (
-        <div className="md:hidden border-t border-border bg-white">
-          <Container className="flex flex-col gap-1 py-3 text-sm">
-            {navLinks.map((l) => (
-              <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="rounded-md px-2 py-2.5 hover:bg-muted">
-                {l.label}
-              </a>
-            ))}
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-md border border-border font-medium">
-                Sign in
-              </Link>
-              <a
-                href="#contact"
-                onClick={() => setOpen(false)}
-                className="inline-flex h-10 items-center justify-center rounded-md bg-primary font-medium text-primary-foreground"
-              >
-                Book a demo
-              </a>
-            </div>
-          </Container>
-        </div>
-      )}
-    </header>
-  );
-};
 
 // ===== Hero =====
 const sampleLoans = [
@@ -360,7 +222,7 @@ const Products = () => (
             </div>
             <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">{p.desc}</p>
             <a
-              href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`${p.name} demo`)}`}
+              href={demoHrefFor(p.name)}
               className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-primary"
             >
               Request a demo <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -368,20 +230,14 @@ const Products = () => (
           </article>
         ))}
       </div>
+      <Link to="/products" className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+        View the full catalog <ArrowRight className="h-3.5 w-3.5" />
+      </Link>
     </Container>
   </section>
 );
 
 // ===== AI Helpers =====
-const aiHelpers: { icon: LucideIcon; name: string; desc: string }[] = [
-  { icon: Smile, name: "Sentiment analysis", desc: "Read the mood across reviews, tickets and chats so teams act before small issues become churn." },
-  { icon: Bot, name: "Chat bot", desc: "An always-on assistant that answers customers and staff using your own product data." },
-  { icon: TrendingUp, name: "Stock prediction", desc: "Forecast demand per item and location to keep the right stock without tying up capital." },
-  { icon: ShieldCheck, name: "Customer risk scoring", desc: "Score borrowers on repayment risk using behaviour and history, so you lend with confidence." },
-  { icon: ScanLine, name: "OCR billing", desc: "Snap or upload an invoice and turn it into a structured bill, with no manual entry." },
-  { icon: Mic, name: "Voice to billing", desc: "Speak line items aloud and watch them become invoice entries. Built for busy counters." },
-];
-
 const AiHelpers = () => (
   <section id="ai-helpers" className="border-y border-border bg-muted py-20 md:py-28">
     <Container>
@@ -390,16 +246,8 @@ const AiHelpers = () => (
         title="AI that works inside the products you already use."
         desc="Lightweight helpers that plug into any CodingRoof product, taking over the busywork and surfacing what needs attention."
       />
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {aiHelpers.map(({ icon: Icon, name, desc }) => (
-          <div key={name} className="rounded-xl border border-border bg-white p-6">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-primary">
-              <Icon className="h-5 w-5" strokeWidth={1.75} />
-            </span>
-            <h3 className="mt-4 text-base font-semibold">{name}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
-          </div>
-        ))}
+      <div className="mt-12">
+        <AiHelperGrid />
       </div>
     </Container>
   </section>
@@ -761,87 +609,10 @@ const Faq = () => {
   );
 };
 
-// ===== CTA + Footer =====
-const Cta = () => (
-  <section id="contact" className="pb-20 md:pb-28">
-    <Container>
-      <div className="rounded-3xl bg-primary px-6 py-14 text-center md:px-16 md:py-20">
-        <h2 className="mx-auto max-w-2xl text-3xl md:text-[44px] font-semibold tracking-[-0.025em] leading-[1.1] text-white text-balance">
-          See how CodingRoof fits your business.
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-base md:text-lg leading-relaxed text-white/80">
-          Tell us how you work today. We'll walk you through the right product, or come back with a roadmap,
-          timeline and ROI estimate for a custom build.
-        </p>
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a
-            href={DEMO_HREF}
-            className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-white px-6 text-sm font-medium text-primary hover:bg-white/90"
-          >
-            Book a demo <ArrowRight className="h-4 w-4" />
-          </a>
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-md border border-white/30 px-6 text-sm font-medium text-white hover:bg-white/10"
-          >
-            {CONTACT_EMAIL}
-          </a>
-        </div>
-      </div>
-    </Container>
-  </section>
-);
-
-const Footer = () => (
-  <footer className="border-t border-border">
-    <Container className="grid gap-10 py-14 md:grid-cols-12">
-      <div className="md:col-span-4">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="" className="h-7 w-auto" />
-          <span className="text-[15px] font-semibold">CodingRoof</span>
-        </Link>
-        <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-          Ready-to-run business software and custom builds for growing companies.
-        </p>
-      </div>
-      <div className="md:col-span-3">
-        <p className="text-sm font-semibold">Products</p>
-        <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2.5 whitespace-nowrap text-sm text-muted-foreground">
-          {products.map((p) => (
-            <li key={p.slug}>
-              <a href="#products" className="hover:text-foreground">
-                {p.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="md:col-span-2">
-        <p className="text-sm font-semibold">Company</p>
-        <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-          <li><a href="#ai-helpers" className="hover:text-foreground">AI Helpers</a></li>
-          <li><a href="#industries" className="hover:text-foreground">Industries</a></li>
-          <li><a href="#pricing" className="hover:text-foreground">Custom builds</a></li>
-          <li><a href="#faq" className="hover:text-foreground">FAQ</a></li>
-        </ul>
-      </div>
-      <div className="md:col-span-3">
-        <p className="text-sm font-semibold">Contact</p>
-        <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-          <li><a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-foreground">{CONTACT_EMAIL}</a></li>
-          <li><a href={DEMO_HREF} className="hover:text-foreground">Book a demo</a></li>
-          <li><Link to="/login" className="hover:text-foreground">Sign in</Link></li>
-        </ul>
-      </div>
-    </Container>
-    <Container className="border-t border-border py-6 text-xs text-muted-foreground">
-      © {new Date().getFullYear()} CodingRoof. All rights reserved.
-    </Container>
-  </footer>
-);
-
 // ===== Page =====
-const LandingPage = () => (
+const LandingPage = () => {
+  useHashScroll();
+  return (
   <div className="min-h-screen bg-background text-foreground">
     <Navbar />
     <main>
@@ -853,10 +624,14 @@ const LandingPage = () => (
       <Principles />
       <Engagements />
       <Faq />
-      <Cta />
+      <Cta
+        title="See how CodingRoof fits your business."
+        desc="Tell us how you work today. We'll walk you through the right product, or come back with a roadmap, timeline and ROI estimate for a custom build."
+      />
     </main>
     <Footer />
   </div>
-);
+  );
+};
 
 export default LandingPage;
