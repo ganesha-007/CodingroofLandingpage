@@ -689,7 +689,7 @@ const StickerCard = ({ index, title, desc, icon: Icon }: { index: number; title:
 export const faqs = [
   {
     q: "How do you charge for projects?",
-    a: "Most engagements are fixed-scope sprints with a clear deliverable, or monthly product pods for ongoing work. We share a transparent quote after the discovery call.",
+    a: "After a free discovery call, we share a transparent, fixed quote, so you know the full cost before any work starts.",
   },
   {
     q: "Do we own the code and IP?",
