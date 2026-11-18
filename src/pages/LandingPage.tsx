@@ -18,63 +18,41 @@ import {
   useHashScroll,
 } from "@/components/site";
 
-/** Hand-drawn blue marker swipe behind a word, with a sketched underline that draws itself in. */
+/** Bold dry-brush highlight behind a word (hand-painted look, brand gold), swept in left to right. */
+const BRUSH_BRISTLES: [number, number, number, number, number][] = [
+  // x1, y1, x2, y2, width — frayed bristle ends on both sides
+  [372, 20, 394, 19, 8], [374, 33, 389, 33, 9], [372, 46, 397, 45, 10], [374, 60, 387, 61, 8], [372, 73, 395, 74, 9], [370, 84, 383, 85, 6],
+  [30, 22, 9, 23, 8], [28, 36, 14, 36, 9], [30, 50, 4, 51, 10], [28, 64, 15, 64, 8], [30, 77, 7, 78, 9],
+];
 const Highlight = ({ children }: { children: ReactNode }) => {
   const reduce = useReducedMotion();
-  const draw = (delay: number, duration: number) =>
-    reduce
-      ? {}
-      : {
-          initial: { pathLength: 0, opacity: 0 },
-          animate: { pathLength: 1, opacity: 1 },
-          transition: { delay, duration, ease: [0.65, 0, 0.35, 1] as const, opacity: { delay, duration: 0.01 } },
-        };
   return (
     <span className="relative inline-block whitespace-nowrap">
-      {/* marker swipe: organic edges, tapered ends, slight upward tilt */}
       <motion.svg
         aria-hidden
-        viewBox="0 0 400 60"
+        viewBox="0 0 400 100"
         preserveAspectRatio="none"
-        className="absolute -left-[0.07em] bottom-[0.06em] h-[0.5em] w-[calc(100%+0.14em)] -rotate-[1.2deg] mix-blend-multiply"
+        className="absolute -left-[0.1em] -bottom-[0.05em] h-[0.8em] w-[calc(100%+0.2em)] -rotate-[1deg]"
         initial={reduce ? false : { clipPath: "inset(0 100% 0 0)" }}
         animate={{ clipPath: "inset(0 0% 0 0)" }}
-        transition={{ delay: 0.35, duration: 0.7, ease: [0.65, 0, 0.35, 1] }}
+        transition={{ delay: 0.35, duration: 0.65, ease: [0.65, 0, 0.35, 1] }}
       >
-        <defs>
-          <linearGradient id="hl-marker" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0" stopColor="#BBD1FF" />
-            <stop offset="0.55" stopColor="#A7C4FF" />
-            <stop offset="1" stopColor="#C2D7FF" />
-          </linearGradient>
-        </defs>
         <path
-          fill="url(#hl-marker)"
-          d="M14 22 C 9 16, 18 9, 34 10 C 90 6, 150 9, 210 7 C 270 5, 330 8, 380 9 C 393 9, 398 17, 391 23 C 396 30, 394 40, 384 44 C 330 50, 262 47, 200 51 C 140 55, 80 50, 28 53 C 12 54, 5 46, 11 39 C 4 33, 6 26, 14 22 Z"
+          fill="#F6C23E"
+          d="M24 18 C 90 12, 170 15, 250 12 C 300 10, 345 13, 376 14 C 381 30, 380 60, 377 86 C 320 90, 250 87, 180 90 C 120 92, 70 88, 22 90 C 19 66, 20 40, 24 18 Z"
         />
-        <path
-          fill="#AFC8FB"
-          opacity="0.45"
-          d="M40 30 C 120 26, 230 27, 360 24 C 368 24, 370 31, 362 32 C 250 36, 140 35, 42 38 C 34 38, 33 31, 40 30 Z"
-        />
+        <g stroke="#F6C23E" strokeLinecap="round">
+          {BRUSH_BRISTLES.map(([x1, y1, x2, y2, w], i) => (
+            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} strokeWidth={w} />
+          ))}
+        </g>
+        {/* dry-brush streaks for texture */}
+        <g stroke="#E9B22E" strokeLinecap="round" fill="none">
+          <path d="M40 30 C 140 26, 250 28, 360 26" strokeWidth="3" opacity="0.35" />
+          <path d="M52 58 C 150 61, 260 57, 352 60" strokeWidth="2.5" opacity="0.3" />
+          <path d="M64 76 C 160 73, 250 76, 340 73" strokeWidth="2" opacity="0.3" />
+        </g>
       </motion.svg>
-      {/* sketched underline: one confident stroke with a small return flick */}
-      <svg
-        aria-hidden
-        viewBox="0 0 400 30"
-        preserveAspectRatio="none"
-        className="absolute -left-[0.04em] -bottom-[0.14em] h-[0.2em] w-[calc(100%+0.1em)] overflow-visible"
-      >
-        <motion.path
-          d="M6 18 C 80 10, 190 9, 300 11 C 340 12, 372 14, 394 10 M 330 20 C 352 18, 372 19, 388 17"
-          fill="none"
-          stroke="#2463D1"
-          strokeWidth="3.2"
-          strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
-          {...draw(0.9, 0.8)}
-        />
-      </svg>
       <span className="relative">{children}</span>
     </span>
   );
