@@ -280,6 +280,7 @@ const industryPhotos = Object.fromEntries(
 ) as Record<string, string>;
 
 export const industries = [
+  { slug: "it", name: "IT & software", desc: "Sales pipelines and client billing, plus projects, sprints and issue tracking for product teams.", products: ["funnello", "vector"] },
   { slug: "lending", name: "Lending & finance", desc: "Pledges, deposits, loans and ledgers with full audit trails.", products: ["gold-loan", "banking"] },
   { slug: "healthcare", name: "Healthcare supply", desc: "Batch, expiry and reorder control for medical distributors.", products: ["surgicals"] },
   { slug: "retail", name: "Retail", desc: "Counter billing, stock and repeat customers for stores of every size.", products: ["retail"] },
@@ -688,24 +689,32 @@ const StickerCard = ({ index, title, desc, icon: Icon }: { index: number; title:
 // ===== FAQ =====
 export const faqs = [
   {
-    q: "How do you charge for projects?",
-    a: "After a free discovery call, we share a transparent, fixed quote, so you know the full cost before any work starts.",
+    q: "What does CodingRoof make?",
+    a: "Ready-to-run software for running a business: Funnello for sales, Vector for projects and an ERP for operations, plus systems built for gold loan lenders, banks, surgical distributors, textile and print businesses, retail stores, salons, gyms and field service teams.",
   },
   {
-    q: "Do we own the code and IP?",
-    a: "Yes, 100%. Everything is delivered into your repository under your name, with full documentation and handover support.",
+    q: "How much does it cost?",
+    a: "It depends on the product and the size of your setup, such as the number of users or branches. Book a demo and we'll send you a clear quote.",
   },
   {
-    q: "What stack do you build on?",
-    a: "TypeScript, React, Node, Postgres and modern cloud infrastructure (AWS, GCP or managed platforms). We pick proven tools that scale.",
+    q: "Can you move our existing data?",
+    a: "Yes. We move your data from spreadsheets or your current software as part of setup, so you don't start from zero.",
   },
   {
-    q: "Can you take over an existing product?",
-    a: "Yes. We routinely audit, stabilise and modernise existing codebases before adding new capabilities on top.",
+    q: "Who looks after hosting, updates and support?",
+    a: "We do. CodingRoof hosts the software, ships the updates and handles day-to-day support, so your team just uses it.",
   },
   {
-    q: "How quickly can we start?",
-    a: "Usually within 1–2 weeks of the discovery call, depending on team availability. Urgent projects can sometimes start sooner.",
+    q: "Can we use more than one product?",
+    a: "Yes. Start with the product you need most and add others as your business grows.",
+  },
+  {
+    q: "Do you work with businesses outside India?",
+    a: "Yes. We serve customers in more than 14 countries.",
+  },
+  {
+    q: "Can you build something custom?",
+    a: "Yes. If none of our products fits, we'll build it: a fixed quote after a free discovery call, and you own 100% of the code.",
   },
 ];
 
