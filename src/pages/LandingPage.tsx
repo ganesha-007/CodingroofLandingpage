@@ -3,7 +3,9 @@ import { ArrowRight, Check, Compass, Layers, LineChart, Minus, Plus, Rocket, Shi
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { motion, type MotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { categories, products, productBySlug, type Product } from "@/data/products";
-import { HeroShowcase } from "@/components/HeroShowcase";
+import heroFilmMp4 from "@/assets/hero/hero-film.mp4";
+import heroFilmWebm from "@/assets/hero/hero-film.webm";
+import heroFilmPoster from "@/assets/hero/hero-film-poster.jpg";
 import {
   AiHelperGrid,
   CONTACT_EMAIL,
@@ -44,6 +46,32 @@ const Highlight = ({ children }: { children: ReactNode }) => (
 );
 
 // ===== Hero =====
+/** Hero brand film (made with Higgsfield Higgsedit). Silent autoplay loop; static poster for reduced motion. */
+const HeroFilm = () => {
+  const reduceMotion = useReducedMotion();
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border bg-[#F1EEFB] shadow-[0_30px_80px_-30px_rgba(40,30,120,0.35)]">
+      {reduceMotion ? (
+        <img src={heroFilmPoster} alt="CodingRoof assistant answering across Gold Loan, Retail and FitForge" className="block aspect-[4/3] w-full object-cover sm:aspect-video" />
+      ) : (
+        <video
+          className="block aspect-[4/3] w-full object-cover sm:aspect-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster={heroFilmPoster}
+          aria-label="CodingRoof assistant answering across Gold Loan, Retail and FitForge"
+        >
+          <source src={heroFilmWebm} type="video/webm" />
+          <source src={heroFilmMp4} type="video/mp4" />
+        </video>
+      )}
+    </div>
+  );
+};
+
 const Hero = () => (
   <section className="relative overflow-x-clip">
     {/* Faint grid that fades out, plus a soft blue wash */}
@@ -88,7 +116,7 @@ const Hero = () => (
         </div>
       </div>
       <div className="mx-auto mt-14 max-w-5xl md:mt-16">
-        <HeroShowcase />
+        <HeroFilm />
       </div>
     </Container>
   </section>
