@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.webp";
+import goldLoanLogo from "@/assets/Smart loan logo.svg";
 
 const ACCENT = "#d2603a";
 const INK = "#211d18";
@@ -12,6 +13,7 @@ interface Product {
   tag: string;
   desc: string;
   color: string;
+  logo?: string;
 }
 
 const products: Product[] = [
@@ -21,6 +23,7 @@ const products: Product[] = [
     tag: "Lending & pawn ops",
     desc: "End-to-end gold loan and pawn-broking operations — valuation, disbursal, interest tracking, renewals and auctions.",
     color: "#e8a13c",
+    logo: goldLoanLogo,
   },
   {
     letter: "S",
@@ -463,7 +466,10 @@ const SectionHeading = ({ eyebrow, title, desc }: { eyebrow: string; title: stri
   </div>
 );
 
-const ProductCard = ({ product }: { product: Product }) => (
+const ProductCard = ({ product }: { product: Product }) => {
+  const hasLogo = Boolean(product.logo);
+
+  return (
   <div
     style={{
       position: "relative",
@@ -491,7 +497,7 @@ const ProductCard = ({ product }: { product: Product }) => (
           width: 46,
           height: 46,
           borderRadius: 13,
-          background: product.color,
+          background: hasLogo ? "#fff" : product.color,
           color: "#fff",
           border: `1.5px solid ${INK}`,
           display: "flex",
@@ -500,9 +506,19 @@ const ProductCard = ({ product }: { product: Product }) => (
           fontFamily: "'Bricolage Grotesque', sans-serif",
           fontWeight: 800,
           fontSize: 20,
+          overflow: "hidden",
+          padding: hasLogo ? 4 : 0,
         }}
       >
-        {product.letter}
+        {product.logo ? (
+          <img
+            src={product.logo}
+            alt={`${product.name} logo`}
+            style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "center" }}
+          />
+        ) : (
+          product.letter
+        )}
       </span>
       <span
         style={{
@@ -528,7 +544,8 @@ const ProductCard = ({ product }: { product: Product }) => (
     <p style={{ margin: "3px 0 0", fontSize: 12.5, fontWeight: 600, color: ACCENT }}>{product.tag}</p>
     <p style={{ margin: "12px 0 0", fontSize: 14, lineHeight: 1.55, color: "#6b6256" }}>{product.desc}</p>
   </div>
-);
+  );
+};
 
 const HelperCard = ({ helper }: { helper: Helper }) => (
   <div
