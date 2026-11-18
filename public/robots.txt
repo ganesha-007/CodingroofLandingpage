@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://codingroof.com/sitemap.xml
