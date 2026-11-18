@@ -205,7 +205,8 @@ const industryPhotos = Object.fromEntries(
 const industries = [
   { slug: "lending", name: "Lending & finance", desc: "Pledges, deposits, loans and ledgers with full audit trails.", products: ["gold-loan", "banking"] },
   { slug: "healthcare", name: "Healthcare supply", desc: "Batch, expiry and reorder control for medical distributors.", products: ["surgicals"] },
-  { slug: "retail", name: "Retail & personal care", desc: "Counters, salon appointments, gym memberships and repeat customers.", products: ["retail", "salon", "fitforge"] },
+  { slug: "retail", name: "Retail", desc: "Counter billing, stock and repeat customers for stores of every size.", products: ["retail"] },
+  { slug: "personal-care", name: "Personal care", desc: "Salon appointments, gym memberships, trainers and repeat clients.", products: ["salon", "fitforge"] },
   { slug: "manufacturing", name: "Manufacturing & textiles", desc: "Orders, production stages, inventory and accounts.", products: ["textile", "erp"] },
   { slug: "print", name: "Print & packaging", desc: "Quote-to-delivery for print shops and converters.", products: ["print"] },
   { slug: "field", name: "Field operations", desc: "Jobs, technicians and on-site service, tracked end to end.", products: ["field-service"] },
