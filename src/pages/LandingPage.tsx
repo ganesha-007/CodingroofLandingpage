@@ -15,6 +15,7 @@ import {
   Navbar,
   ProductTile,
   SectionHeader,
+  usePageTitle,
   useHashScroll,
 } from "@/components/site";
 
@@ -821,6 +822,7 @@ const Faq = () => {
 // ===== Page =====
 const LandingPage = () => {
   useHashScroll();
+  usePageTitle();
   return (
   <div className="min-h-screen bg-background text-foreground">
     <Navbar />

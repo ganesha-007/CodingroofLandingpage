@@ -10,6 +10,7 @@ import {
   ProductTile,
   SectionHeader,
   demoHrefFor,
+  usePageTitle,
   useHashScroll,
 } from "@/components/site";
 
@@ -162,6 +163,7 @@ const ProductCard = ({ p, active }: { p: Product; active: boolean }) => (
 // ===== Page =====
 const ProductsPage = () => {
   useHashScroll();
+  usePageTitle("Products");
   const { hash } = useLocation();
   const activeSlug = hash.slice(1);
 

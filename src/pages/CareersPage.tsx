@@ -1,6 +1,6 @@
 import { ArrowRight, BrainCircuit, Bug, Code, Headphones, Layers, PenTool, Rocket, Sparkles, TrendingUp, type LucideIcon } from "lucide-react";
 import { aiHelpers, products } from "@/data/products";
-import { CONTACT_EMAIL, Container, FaqList, Footer, Navbar, SectionHeader, useHashScroll } from "@/components/site";
+import { CONTACT_EMAIL, Container, FaqList, Footer, Navbar, SectionHeader, useHashScroll, usePageTitle } from "@/components/site";
 
 const applyHref = (team: string) =>
   `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Application: ${team}`)}&body=${encodeURIComponent(
@@ -248,6 +248,7 @@ const Closing = () => (
 // ===== Page =====
 const CareersPage = () => {
   useHashScroll();
+  usePageTitle("Careers");
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />

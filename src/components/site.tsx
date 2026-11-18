@@ -24,6 +24,15 @@ const navLinks = [
 const pagesWithContact = ["/", "/products"];
 
 
+export const SITE_TITLE = "CodingRoof | Software your business runs on";
+
+/** Sets the browser tab title for a page; pass nothing for the home page title. */
+export const usePageTitle = (page?: string) => {
+  useEffect(() => {
+    document.title = page ? `${page} | CodingRoof` : SITE_TITLE;
+  }, [page]);
+};
+
 /** Scrolls to the URL hash after client-side navigation (e.g. /products -> /#faq). */
 export const useHashScroll = () => {
   const { hash, pathname } = useLocation();
