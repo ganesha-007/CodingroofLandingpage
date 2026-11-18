@@ -1,6 +1,6 @@
 import { ArrowRight, BrainCircuit, Bug, Code, Headphones, Layers, PenTool, Rocket, Sparkles, TrendingUp, type LucideIcon } from "lucide-react";
 import { aiHelpers, products } from "@/data/products";
-import { CONTACT_EMAIL, Container, FaqList, Footer, Navbar, SectionHeader, useHashScroll, usePageTitle } from "@/components/site";
+import { CONTACT_EMAIL, Container, FaqList, Footer, Navbar, SectionHeader, useHashScroll } from "@/components/site";
 
 const applyHref = (team: string) =>
   `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Application: ${team}`)}&body=${encodeURIComponent(
@@ -132,7 +132,7 @@ const Principles = () => (
 );
 
 // ===== Teams =====
-const teams: { icon: LucideIcon; name: string; desc: string; skills: string[] }[] = [
+export const teams: { icon: LucideIcon; name: string; desc: string; skills: string[] }[] = [
   { icon: Code, name: "Engineering", desc: "Build web and mobile apps that handle real money, stock and customers.", skills: ["React", "TypeScript", "Node.js", "React Native", "MongoDB"] },
   { icon: BrainCircuit, name: "AI and machine learning", desc: "Turn invoices, voice and history into features people use every day.", skills: ["Python", "LLMs", "OCR", "Forecasting"] },
   { icon: PenTool, name: "Product design", desc: "Design screens a cashier or loan officer can use without a manual.", skills: ["Figma", "UX research", "Design systems"] },
@@ -203,7 +203,7 @@ const Process = () => (
 );
 
 // ===== FAQ =====
-const faqs = [
+export const faqs = [
   { q: "Do I need a degree?", a: "No. We hire for skill and curiosity. Show us what you've built and how you think." },
   { q: "Do you hire freshers and interns?", a: "Yes. If you've built projects on your own and want to learn fast, apply. Mention that you're a fresher or looking for an internship." },
   { q: "What happens in the practical round?", a: "We pick a small problem close to the real work, like a screen, an API or a sales pitch, and talk it through with you. It's a conversation, not an exam." },
@@ -248,7 +248,6 @@ const Closing = () => (
 // ===== Page =====
 const CareersPage = () => {
   useHashScroll();
-  usePageTitle("Careers");
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />

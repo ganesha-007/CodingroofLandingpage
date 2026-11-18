@@ -4,3 +4,4 @@ dist
 *.local
 .venv-img
 .vercel
+dist-ssr

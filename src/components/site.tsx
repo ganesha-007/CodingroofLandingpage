@@ -15,7 +15,7 @@ const navLinks = [
   { href: "/#ai-helpers", label: "AI Helpers" },
   { href: "/#industries", label: "Industries" },
   { href: "/#pricing", label: "Pricing" },
-  { href: "/partners", label: "Partners" },
+  { href: "/partners", label: "Partner with us" },
   { href: "/careers", label: "Careers" },
   { href: "/#faq", label: "FAQ" },
 ];
@@ -24,14 +24,6 @@ const navLinks = [
 const pagesWithContact = ["/", "/products"];
 
 
-export const SITE_TITLE = "CodingRoof | Software your business runs on";
-
-/** Sets the browser tab title for a page; pass nothing for the home page title. */
-export const usePageTitle = (page?: string) => {
-  useEffect(() => {
-    document.title = page ? `${page} | CodingRoof` : SITE_TITLE;
-  }, [page]);
-};
 
 /** Scrolls to the URL hash after client-side navigation (e.g. /products -> /#faq). */
 export const useHashScroll = () => {
@@ -269,7 +261,7 @@ export const Footer = () => (
           <li><Link to="/#ai-helpers" className="hover:text-foreground">AI Helpers</Link></li>
           <li><Link to="/#industries" className="hover:text-foreground">Industries</Link></li>
           <li><Link to="/#pricing" className="hover:text-foreground">Custom builds</Link></li>
-          <li><Link to="/partners" className="hover:text-foreground">Partner program</Link></li>
+          <li><Link to="/partners" className="hover:text-foreground">Partner with us</Link></li>
           <li><Link to="/careers" className="hover:text-foreground">Careers</Link></li>
           <li><Link to="/#faq" className="hover:text-foreground">FAQ</Link></li>
         </ul>

@@ -28,7 +28,6 @@ import {
   Navbar,
   ProductTile,
   SectionHeader,
-  usePageTitle,
   useHashScroll,
 } from "@/components/site";
 
@@ -122,7 +121,7 @@ const Hero = () => (
 );
 
 // ===== Ways to partner =====
-const tracks = [
+export const tracks = [
   {
     name: "Referral partner",
     line: "Make the introduction. We do the rest.",
@@ -396,7 +395,7 @@ const Apply = () => {
 };
 
 // ===== FAQ =====
-const faqs = [
+export const faqs = [
   { q: "Does it cost anything to join?", a: "No. The program is free, with no deposit, inventory or minimum target to get started." },
   { q: "Do I need technical knowledge?", a: "No. Referral partners just make introductions. We handle demos, setup and support. Training is there if you want to go deeper." },
   { q: "Which products can I sell?", a: `All ${products.length}, from Funnello CRM and Vector to industry products like Gold Loan, Retail and Salon. Start with the ones your clients need most.` },
@@ -428,7 +427,6 @@ const Faq = () => (
 // ===== Page =====
 const PartnersPage = () => {
   useHashScroll();
-  usePageTitle("Partner Program");
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Compass, Layers, LineChart, Minus, Plus, Rocket, ShieldCheck, Zap, type LucideIcon } from "lucide-react";
-import { ReactNode, useEffect, useId, useRef, useState } from "react";
+import { ArrowRight, Check, Compass, Layers, LineChart, Minus, Pause, Play, Plus, Rocket, ShieldCheck, Zap, type LucideIcon } from "lucide-react";
+import { type MouseEvent, ReactNode, useEffect, useId, useRef, useState } from "react";
 import { motion, type MotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { categories, products, productBySlug, type Product } from "@/data/products";
 import heroFilmMp4 from "@/assets/hero/hero-film.mp4";
@@ -15,7 +15,6 @@ import {
   Navbar,
   ProductTile,
   SectionHeader,
-  usePageTitle,
   useHashScroll,
 } from "@/components/site";
 
@@ -179,7 +178,7 @@ const Hero = () => (
 );
 
 // ===== Stats =====
-const stats = [
+export const stats = [
   { stat: "3.4×", label: "Average ROI within 12 months" },
   { stat: "12+", label: "SaaS products shipped" },
   { stat: "14+", label: "Countries served" },
@@ -286,7 +285,7 @@ const industryPhotos = Object.fromEntries(
   ).map(([path, url]) => [path.split("/").pop()!.replace(/\.\w+$/, ""), url])
 ) as Record<string, string>;
 
-const industries = [
+export const industries = [
   { slug: "lending", name: "Lending & finance", desc: "Pledges, deposits, loans and ledgers with full audit trails.", products: ["gold-loan", "banking"] },
   { slug: "healthcare", name: "Healthcare supply", desc: "Batch, expiry and reorder control for medical distributors.", products: ["surgicals"] },
   { slug: "retail", name: "Retail", desc: "Counter billing, stock and repeat customers for stores of every size.", products: ["retail"] },
@@ -316,11 +315,13 @@ const ProductChips = ({ slugs, onPhoto = false }: { slugs: string[]; onPhoto?: b
   </div>
 );
 
-// Auto-scrolling strip: drifts slowly, pauses on hover/touch/focus, swipeable, static when reduced motion is on.
+// Auto-scrolling strip: keeps drifting under the mouse; a click toggles stop/resume. Swipeable, static when reduced motion is on.
 const Industries = () => {
   const trackRef = useRef<HTMLDivElement>(null);
-  const paused = useRef(false);
-  const resumeTimer = useRef<number | undefined>(undefined);
+  const dragging = useRef(false);
+  const [stopped, setStopped] = useState(false);
+  const stoppedRef = useRef(false);
+  stoppedRef.current = stopped;
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -332,7 +333,7 @@ const Industries = () => {
     const step = (t: number) => {
       const dt = Math.min(t - last, 50);
       last = t;
-      if (paused.current) {
+      if (stoppedRef.current || dragging.current) {
         pos = el.scrollLeft;
       } else {
         if (Math.abs(el.scrollLeft - pos) > 2) pos = el.scrollLeft; // user scrolled the strip
@@ -344,19 +345,12 @@ const Industries = () => {
       raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.clearTimeout(resumeTimer.current);
-    };
+    return () => cancelAnimationFrame(raf);
   }, [reduceMotion]);
 
-  const pause = () => {
-    window.clearTimeout(resumeTimer.current);
-    paused.current = true;
-  };
-  const resume = (delay = 0) => {
-    window.clearTimeout(resumeTimer.current);
-    resumeTimer.current = window.setTimeout(() => (paused.current = false), delay);
+  const toggle = (e: MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest("a")) return; // product chips navigate instead
+    setStopped((s) => !s);
   };
 
   const items = reduceMotion ? industries : [...industries, ...industries];
@@ -372,13 +366,11 @@ const Industries = () => {
       </Container>
       <div
         ref={trackRef}
-        onMouseEnter={pause}
-        onMouseLeave={() => resume()}
-        onTouchStart={pause}
-        onTouchEnd={() => resume(2500)}
-        onFocus={pause}
-        onBlur={() => resume()}
-        className="mt-12 flex gap-5 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8 [mask-image:linear-gradient(to_right,transparent,black_3%,black_97%,transparent)]"
+        onClick={toggle}
+        onTouchStart={() => (dragging.current = true)}
+        onTouchEnd={() => (dragging.current = false)}
+        title={stopped ? "Click to resume scrolling" : "Click to stop scrolling"}
+        className="mt-12 flex cursor-pointer gap-5 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-8 [mask-image:linear-gradient(to_right,transparent,black_3%,black_97%,transparent)]"
       >
         {items.map((it, i) => {
           const photo = industryPhotos[it.slug];
@@ -413,6 +405,19 @@ const Industries = () => {
           );
         })}
       </div>
+      {!reduceMotion && (
+        <Container className="mt-4 flex justify-end">
+          <button
+            type="button"
+            onClick={() => setStopped((s) => !s)}
+            aria-pressed={stopped}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+          >
+            {stopped ? <Play className="h-3 w-3" /> : <Pause className="h-3 w-3" />}
+            {stopped ? "Play" : "Pause"}
+          </button>
+        </Container>
+      )}
     </section>
   );
 };
@@ -687,7 +692,7 @@ const StickerCard = ({ index, title, desc, icon: Icon }: { index: number; title:
 );
 
 // ===== Engagements =====
-const engagements = [
+export const engagements = [
   {
     name: "Sprint",
     tagline: "Fixed scope, fixed price",
@@ -754,7 +759,7 @@ const Engagements = () => (
 );
 
 // ===== FAQ =====
-const faqs = [
+export const faqs = [
   {
     q: "How do you charge for projects?",
     a: "Most engagements are fixed-scope sprints with a clear deliverable, or monthly product pods for ongoing work. We share a transparent quote after the discovery call.",
@@ -822,7 +827,6 @@ const Faq = () => {
 // ===== Page =====
 const LandingPage = () => {
   useHashScroll();
-  usePageTitle();
   return (
   <div className="min-h-screen bg-background text-foreground">
     <Navbar />

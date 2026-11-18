@@ -1,4 +1,27 @@
+# CodingRoof welcomes search engines and AI assistants.
+# AI-readable company and product facts: https://codingroof.com/llms.txt
+
 User-agent: *
+Allow: /
+
+# Search and AI answer engines (explicitly allowed)
+User-agent: Googlebot
+User-agent: Google-Extended
+User-agent: Bingbot
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: DuckAssistBot
+User-agent: meta-externalagent
+User-agent: Amazonbot
+User-agent: CCBot
 Allow: /
 
 Sitemap: https://codingroof.com/sitemap.xml

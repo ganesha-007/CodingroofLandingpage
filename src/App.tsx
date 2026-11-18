@@ -3,9 +3,12 @@ import LandingPage from "@/pages/LandingPage";
 import ProductsPage from "@/pages/ProductsPage";
 import PartnersPage from "@/pages/PartnersPage";
 import CareersPage from "@/pages/CareersPage";
+import { RouteSeo } from "@/seo/RouteSeo";
 
 function App() {
   return (
+    <>
+    <RouteSeo />
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/products" element={<ProductsPage />} />
@@ -13,7 +16,9 @@ function App() {
       <Route path="/careers" element={<CareersPage />} />
       <Route path="/login" element={<PlaceholderPage title="Sign in" />} />
       <Route path="/dashboard" element={<PlaceholderPage title="Dashboard" />} />
+      <Route path="*" element={<PlaceholderPage title="Page not found" />} />
     </Routes>
+    </>
   );
 }
 
