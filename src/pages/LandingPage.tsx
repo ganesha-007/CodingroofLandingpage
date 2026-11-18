@@ -100,10 +100,14 @@ const Hero = () => (
       <div className="mx-auto max-w-3xl text-center">
         <Link
           to="/products"
-          className="inline-flex items-center gap-2 rounded-full border border-border bg-white py-1 pl-1 pr-3 text-xs font-medium text-muted-foreground shadow-sm hover:text-foreground"
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
         >
-          <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-semibold text-primary-foreground">New</span>
-          Funnello CRM and Vector are now part of the suite
+          <span className="flex -space-x-1">
+            {["funnello", "vector", "gold-loan"].map((s) => (
+              <img key={s} src={productBySlug[s].logo} alt="" className="h-4 w-4 rounded-full bg-white object-contain ring-2 ring-white" />
+            ))}
+          </span>
+          {products.length} products, one platform
           <ArrowRight className="h-3 w-3" />
         </Link>
         <h1 className="mt-7 text-[40px] md:text-[68px] font-semibold tracking-[-0.04em] leading-[1.02] text-foreground text-balance">

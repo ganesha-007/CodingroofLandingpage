@@ -1,12 +1,16 @@
 import { Route, Routes } from "react-router-dom";
 import LandingPage from "@/pages/LandingPage";
 import ProductsPage from "@/pages/ProductsPage";
+import PartnersPage from "@/pages/PartnersPage";
+import CareersPage from "@/pages/CareersPage";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/products" element={<ProductsPage />} />
+      <Route path="/partners" element={<PartnersPage />} />
+      <Route path="/careers" element={<CareersPage />} />
       <Route path="/login" element={<PlaceholderPage title="Sign in" />} />
       <Route path="/dashboard" element={<PlaceholderPage title="Dashboard" />} />
     </Routes>

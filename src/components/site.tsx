@@ -1,7 +1,7 @@
 // Shared site chrome and building blocks for the landing and products pages.
 import logo from "@/assets/logo.webp";
 import { Link, useLocation } from "react-router-dom";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { ArrowRight, Menu, Minus, Plus, X } from "lucide-react";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { aiHelpers, products } from "@/data/products";
 
@@ -15,8 +15,13 @@ const navLinks = [
   { href: "/#ai-helpers", label: "AI Helpers" },
   { href: "/#industries", label: "Industries" },
   { href: "/#pricing", label: "Pricing" },
+  { href: "/partners", label: "Partners" },
+  { href: "/careers", label: "Careers" },
   { href: "/#faq", label: "FAQ" },
 ];
+
+/** Pages that render the shared <Cta id="contact">; elsewhere "Book a demo" goes home. */
+const pagesWithContact = ["/", "/products"];
 
 
 /** Scrolls to the URL hash after client-side navigation (e.g. /products -> /#faq). */
@@ -82,6 +87,7 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const demoTo = pagesWithContact.includes(pathname) ? "#contact" : "/#contact";
   const linkClass = (href: string) =>
     `transition-colors hover:text-foreground ${href === pathname ? "text-foreground font-medium" : ""}`;
 
@@ -97,7 +103,7 @@ export const Navbar = () => {
           <span className="text-[15px] font-semibold tracking-[-0.01em]">CodingRoof</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
+        <nav className="hidden lg:flex items-center gap-7 text-sm text-muted-foreground">
           {navLinks.map((l) => (
             <Link key={l.href} to={l.href} className={linkClass(l.href)}>
               {l.label}
@@ -105,22 +111,22 @@ export const Navbar = () => {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-2">
           <Link to="/login" className="inline-flex h-9 items-center rounded-md px-3 text-sm font-medium hover:bg-muted">
             Sign in
           </Link>
-          <a
-            href="#contact"
+          <Link
+            to={demoTo}
             className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             Book a demo
-          </a>
+          </Link>
         </div>
 
         <button
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
-          className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-md border border-border"
+          className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-md border border-border"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -128,7 +134,7 @@ export const Navbar = () => {
       </Container>
 
       {open && (
-        <div className="md:hidden border-t border-border bg-white">
+        <div className="lg:hidden border-t border-border bg-white">
           <Container className="flex flex-col gap-1 py-3 text-sm">
             {navLinks.map((l) => (
               <Link key={l.href} to={l.href} onClick={() => setOpen(false)} className="rounded-md px-2 py-2.5 hover:bg-muted">
@@ -139,13 +145,13 @@ export const Navbar = () => {
               <Link to="/login" className="inline-flex h-10 items-center justify-center rounded-md border border-border font-medium">
                 Sign in
               </Link>
-              <a
-                href="#contact"
+              <Link
+                to={demoTo}
                 onClick={() => setOpen(false)}
                 className="inline-flex h-10 items-center justify-center rounded-md bg-primary font-medium text-primary-foreground"
               >
                 Book a demo
-              </a>
+              </Link>
             </div>
           </Container>
         </div>
@@ -195,6 +201,35 @@ export const Cta = ({ title, desc }: { title: string; desc: string }) => (
   </section>
 );
 
+/** Accordion FAQ list used by the partner and careers pages. */
+export const FaqList = ({ items }: { items: { q: string; a: string }[] }) => {
+  const [open, setOpen] = useState<number | null>(0);
+  return (
+    <div className="divide-y divide-border border-y border-border">
+      {items.map((f, i) => {
+        const isOpen = open === i;
+        return (
+          <div key={f.q}>
+            <button
+              className="flex w-full items-center justify-between gap-6 py-5 text-left"
+              aria-expanded={isOpen}
+              onClick={() => setOpen(isOpen ? null : i)}
+            >
+              <span className="text-base font-medium">{f.q}</span>
+              {isOpen ? (
+                <Minus className="h-4 w-4 shrink-0 text-muted-foreground" />
+              ) : (
+                <Plus className="h-4 w-4 shrink-0 text-muted-foreground" />
+              )}
+            </button>
+            {isOpen && <p className="-mt-1 pb-5 pr-10 text-sm leading-relaxed text-muted-foreground">{f.a}</p>}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export const Footer = () => (
   <footer className="border-t border-border">
     <Container className="grid gap-10 py-14 md:grid-cols-12">
@@ -225,6 +260,8 @@ export const Footer = () => (
           <li><Link to="/#ai-helpers" className="hover:text-foreground">AI Helpers</Link></li>
           <li><Link to="/#industries" className="hover:text-foreground">Industries</Link></li>
           <li><Link to="/#pricing" className="hover:text-foreground">Custom builds</Link></li>
+          <li><Link to="/partners" className="hover:text-foreground">Partner program</Link></li>
+          <li><Link to="/careers" className="hover:text-foreground">Careers</Link></li>
           <li><Link to="/#faq" className="hover:text-foreground">FAQ</Link></li>
         </ul>
       </div>
