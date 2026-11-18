@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="FitForge logo">
+  <defs>
+    <linearGradient id="redMain" x1="90" y1="50" x2="400" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="40%" stop-color="#FF3D3D"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+    <linearGradient id="redStem" x1="170" y1="240" x2="280" y2="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF3D3D"/>
+      <stop offset="100%" stop-color="#8B0F0F"/>
+    </linearGradient>
+    <linearGradient id="graySide" x1="80" y1="200" x2="220" y2="430" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3A3C42"/>
+      <stop offset="100%" stop-color="#1F2126"/>
+    </linearGradient>
+    <linearGradient id="darkBevel" x1="200" y1="150" x2="360" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8B1515"/>
+      <stop offset="100%" stop-color="#4A0A0A"/>
+    </linearGradient>
+  </defs>
+  <g id="mark">
+    <!-- Gray depth plane -->
+    <path d="M151,452L71,374L71,265L216,126L258,126L218,138L151,204Z" fill="url(#graySide)"/>
+    <!-- Outer left lip -->
+    <path d="M71,162L73,160L80,256L72,265Z" fill="#6B1010"/>
+    <!-- Outer top underside -->
+    <path d="M216,126L362,127L350,138L218,138Z" fill="url(#darkBevel)"/>
+    <!-- Outer top face -->
+    <path d="M80,256L73,160L176,55L440,56L362,127L216,126Z" fill="url(#redMain)"/>
+    <!-- Inner body base -->
+    <path d="M177,430L176,224L218,182L378,183L292,269L246,271L246,356Z" fill="url(#redStem)"/>
+    <!-- Inner right bevel -->
+    <path d="M378,183L292,269L246,271L306,241Z" fill="url(#darkBevel)"/>
+    <!-- Inner tip bevel -->
+    <path d="M246,356L177,430L194,409Z" fill="#4A0A0A"/>
+    <!-- Mid-bar underside ledge -->
+    <path d="M215,241L306,241L292,269L246,271L218,257Z" fill="#6B1010"/>
+    <!-- Mid-bar top face -->
+    <path d="M178,275L177,224L218,182L378,183L306,241L215,241Z" fill="url(#redMain)"/>
+  </g>
+</svg>

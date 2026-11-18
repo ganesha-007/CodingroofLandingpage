@@ -8,6 +8,7 @@ import textile from "@/assets/products/textile.svg";
 import printing from "@/assets/products/printing.svg";
 import retail from "@/assets/products/retail.svg";
 import salon from "@/assets/products/salon.svg";
+import fitforge from "@/assets/products/fitforge.svg";
 import fieldService from "@/assets/products/field-service.svg";
 import { Bot, Mic, ScanLine, ShieldCheck, Smile, TrendingUp, type LucideIcon } from "lucide-react";
 
@@ -130,6 +131,16 @@ export const products: Product[] = [
     tag: "Salons & spas",
     desc: "Appointments, stylists and billing for salons and spas.",
     features: ["Appointments", "Stylists", "Billing"],
+  },
+  {
+    slug: "fitforge",
+    category: "industry",
+    name: "FitForge",
+    logo: fitforge,
+    tag: "Gyms & fitness studios",
+    desc: "Memberships, attendance, trainers and renewals for gyms and fitness studios.",
+    features: ["Memberships", "Attendance", "Trainers", "Renewals"],
+    url: "https://fitforge.codingroof.com",
   },
   {
     slug: "field-service",
