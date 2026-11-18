@@ -30,8 +30,10 @@ export const categories: { id: ProductCategory; label: string; desc: string }[] 
 export interface Product {
   slug: string;
   category: ProductCategory;
-  /** Live product URL, when the product has its own site. */
+  /** Live product URL, when the product has its own site (may be an app login). */
   url?: string;
+  /** Public marketing landing page; "Learn more" on the home page goes here when set. */
+  landing?: string;
   name: string;
   logo: string;
   tag: string;
@@ -49,6 +51,7 @@ export const products: Product[] = [
     desc: "Leads, calls, deals, invoices and commission, in one place.",
     features: ["Leads", "Calls", "Deals", "Invoices", "Commission"],
     url: "https://funnello.codingroof.com",
+    landing: "https://funnello.codingroof.com",
   },
   {
     slug: "vector",
@@ -77,6 +80,8 @@ export const products: Product[] = [
     tag: "Lending & pawn operations",
     desc: "Valuation, disbursal, interest tracking, renewals and auctions for gold-loan lenders.",
     features: ["Gold valuation", "Loan disbursal", "Interest tracking", "Renewals", "Auctions"],
+    url: "https://goldloan.codingroof.com",
+    landing: "https://goldloan.codingroof.com",
   },
   {
     slug: "banking",
@@ -141,6 +146,7 @@ export const products: Product[] = [
     desc: "Memberships, attendance, trainers and renewals for gyms and fitness studios.",
     features: ["Memberships", "Attendance", "Trainers", "Renewals"],
     url: "https://fitforge.codingroof.com",
+    landing: "https://fitforge.codingroof.com",
   },
   {
     slug: "field-service",
@@ -150,6 +156,8 @@ export const products: Product[] = [
     tag: "On-site operations",
     desc: "Jobs, technician scheduling and on-site check-in.",
     features: ["Jobs", "Technician scheduling", "On-site check-in"],
+    url: "https://konnect.codingroof.com",
+    landing: "https://konnect.codingroof.com",
   },
 ];
 
