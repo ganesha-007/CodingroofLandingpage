@@ -1,9 +1,9 @@
 // Shared site chrome and building blocks for the landing and products pages.
 import logo from "@/assets/logo.webp";
 import { Link, useLocation } from "react-router-dom";
-import { ArrowRight, Check, Loader2, Menu, Minus, Plus, X } from "lucide-react";
-import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
-import { aiHelpers, products } from "@/data/products";
+import { ArrowRight, Check, ChevronDown, Loader2, Menu, MessagesSquare, Minus, Plus, Sparkles, X } from "lucide-react";
+import { FormEvent, KeyboardEvent, ReactNode, useEffect, useId, useRef, useState } from "react";
+import { aiHelpers, categories, products } from "@/data/products";
 
 export const CONTACT_EMAIL = "hello@codingroof.com";
 /** Opens the on-page demo form with this product preselected. */
@@ -172,6 +172,145 @@ const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY as string | undefined;
 const fieldClass =
   "h-11 w-full rounded-md border border-border bg-white px-3 text-[15px] text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20";
 
+type PickerOption = { value: string; label: string; hint?: string; logo?: string; icon?: typeof Sparkles };
+const pickerGroups: { label: string; options: PickerOption[] }[] = [
+  ...categories.map((c) => ({
+    label: c.label,
+    options: products
+      .filter((p) => p.category === c.id)
+      .map((p) => ({ value: p.name, label: p.name, hint: p.tag, logo: p.logo })),
+  })),
+  {
+    label: "Something else",
+    options: [
+      { value: "Custom software", label: "Custom software", hint: "Built for you", icon: Sparkles },
+      { value: "Not sure yet", label: "Not sure yet", hint: "Help me choose", icon: MessagesSquare },
+    ],
+  },
+];
+const pickerOptions = pickerGroups.flatMap((g) => g.options);
+
+/** Styled replacement for <select>: logos, grouped options, keyboard support. Posts as name="business". */
+const ProductPicker = ({ value, onChange, labelledBy }: { value: string; onChange: (v: string) => void; labelledBy: string }) => {
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const listId = useId();
+  const selected = pickerOptions.find((o) => o.value === value);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => !rootRef.current?.contains(e.target as Node) && setOpen(false);
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  useEffect(() => {
+    if (open) listRef.current?.querySelector<HTMLElement>(`[data-index="${active}"]`)?.scrollIntoView({ block: "nearest" });
+  }, [open, active]);
+
+  const openList = () => {
+    setActive(Math.max(0, pickerOptions.findIndex((o) => o.value === value)));
+    setOpen(true);
+  };
+  const choose = (v: string) => {
+    onChange(v);
+    setOpen(false);
+  };
+  const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (!open && ["ArrowDown", "ArrowUp", "Enter", " "].includes(e.key)) {
+      e.preventDefault();
+      openList();
+      return;
+    }
+    if (!open) return;
+    if (e.key === "ArrowDown") (e.preventDefault(), setActive((a) => Math.min(a + 1, pickerOptions.length - 1)));
+    else if (e.key === "ArrowUp") (e.preventDefault(), setActive((a) => Math.max(a - 1, 0)));
+    else if (e.key === "Enter" || e.key === " ") (e.preventDefault(), choose(pickerOptions[active].value));
+    else if (e.key === "Escape" || e.key === "Tab") setOpen(false);
+  };
+
+  const Visual = ({ o, size = "h-5 w-5" }: { o: PickerOption; size?: string }) =>
+    o.logo ? (
+      <img src={o.logo} alt="" className={`${size} object-contain`} />
+    ) : o.icon ? (
+      <o.icon className={`${size} text-primary`} strokeWidth={1.75} />
+    ) : null;
+
+  let index = -1;
+  return (
+    <div ref={rootRef} className="relative">
+      <input type="hidden" name="business" value={value} />
+      <button
+        type="button"
+        role="combobox"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={listId}
+        aria-labelledby={labelledBy}
+        onClick={() => (open ? setOpen(false) : openList())}
+        onKeyDown={onKeyDown}
+        className={`${fieldClass} flex items-center gap-2.5 text-left font-normal ${open ? "border-primary ring-2 ring-primary/20" : ""}`}
+      >
+        {selected ? (
+          <>
+            <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border bg-white">
+              <Visual o={selected} size="h-4 w-4" />
+            </span>
+            <span className="truncate">{selected.label}</span>
+          </>
+        ) : (
+          <span className="truncate text-muted-foreground/70">Choose a product</span>
+        )}
+        <ChevronDown className={`ml-auto h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div
+          ref={listRef}
+          id={listId}
+          role="listbox"
+          aria-labelledby={labelledBy}
+          className="absolute right-0 top-full z-30 mt-2 w-full sm:min-w-[17.5rem] max-h-80 overflow-y-auto overscroll-contain rounded-xl border border-border bg-white p-1.5 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.35)]"
+        >
+          {pickerGroups.map((g) => (
+            <div key={g.label} role="group" aria-label={g.label} className="py-1">
+              <p className="px-2.5 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{g.label}</p>
+              {g.options.map((o) => {
+                index += 1;
+                const i = index;
+                const isSel = o.value === value;
+                return (
+                  <div
+                    key={o.value}
+                    role="option"
+                    aria-selected={isSel}
+                    data-index={i}
+                    onMouseEnter={() => setActive(i)}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => choose(o.value)}
+                    className={`flex cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 ${i === active ? "bg-accent" : ""}`}
+                  >
+                    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-white">
+                      <Visual o={o} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-medium text-foreground">{o.label}</span>
+                      {o.hint && <span className="block truncate text-xs text-muted-foreground">{o.hint}</span>}
+                    </span>
+                    {isSel && <Check className="h-4 w-4 shrink-0 text-primary" />}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 /** Demo request form. Sends to hello@codingroof.com via Web3Forms; without a key it falls back to the visitor's mail app. */
 export const DemoForm = () => {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -238,19 +377,10 @@ export const DemoForm = () => {
           </span>
           <input name="phone" type="tel" autoComplete="tel" className={fieldClass} placeholder="+91" />
         </label>
-        <label className="grid gap-1.5 text-sm font-medium text-foreground">
-          Interested in
-          <select name="business" value={product} onChange={(e) => setProduct(e.target.value)} className={fieldClass}>
-            <option value="">Choose a product</option>
-            {products.map((p) => (
-              <option key={p.slug} value={p.name}>
-                {p.name} ({p.tag})
-              </option>
-            ))}
-            <option value="Custom software">Custom software</option>
-            <option value="Not sure yet">Not sure yet</option>
-          </select>
-        </label>
+        <div className="grid gap-1.5 text-sm font-medium text-foreground">
+          <span id="business-label">Interested in</span>
+          <ProductPicker value={product} onChange={setProduct} labelledBy="business-label" />
+        </div>
       </div>
       <label className="grid gap-1.5 text-sm font-medium text-foreground">
         <span>
