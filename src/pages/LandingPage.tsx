@@ -18,32 +18,67 @@ import {
   useHashScroll,
 } from "@/components/site";
 
-/** Soft blue marker stroke behind a word (restyled from the original yellow scribble). */
-const Highlight = ({ children }: { children: ReactNode }) => (
-  <span className="relative inline-block whitespace-nowrap">
-    <svg
-      aria-hidden
-      viewBox="0 0 300 40"
-      preserveAspectRatio="none"
-      className="absolute -left-[0.06em] bottom-[0.1em] h-[0.46em] w-[calc(100%+0.12em)] -rotate-[0.6deg]"
-    >
-      <defs>
-        <linearGradient id="hl-blue" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" stopColor="hsl(218 90% 86%)" />
-          <stop offset="1" stopColor="hsl(205 90% 86%)" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M8 24 C 90 17, 200 15, 292 20"
-        fill="none"
-        stroke="url(#hl-blue)"
-        strokeWidth="28"
-        strokeLinecap="round"
-      />
-    </svg>
-    <span className="relative">{children}</span>
-  </span>
-);
+/** Hand-drawn blue marker swipe behind a word, with a sketched underline that draws itself in. */
+const Highlight = ({ children }: { children: ReactNode }) => {
+  const reduce = useReducedMotion();
+  const draw = (delay: number, duration: number) =>
+    reduce
+      ? {}
+      : {
+          initial: { pathLength: 0, opacity: 0 },
+          animate: { pathLength: 1, opacity: 1 },
+          transition: { delay, duration, ease: [0.65, 0, 0.35, 1] as const, opacity: { delay, duration: 0.01 } },
+        };
+  return (
+    <span className="relative inline-block whitespace-nowrap">
+      {/* marker swipe: organic edges, tapered ends, slight upward tilt */}
+      <motion.svg
+        aria-hidden
+        viewBox="0 0 400 60"
+        preserveAspectRatio="none"
+        className="absolute -left-[0.07em] bottom-[0.06em] h-[0.5em] w-[calc(100%+0.14em)] -rotate-[1.2deg] mix-blend-multiply"
+        initial={reduce ? false : { clipPath: "inset(0 100% 0 0)" }}
+        animate={{ clipPath: "inset(0 0% 0 0)" }}
+        transition={{ delay: 0.35, duration: 0.7, ease: [0.65, 0, 0.35, 1] }}
+      >
+        <defs>
+          <linearGradient id="hl-marker" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stopColor="#BBD1FF" />
+            <stop offset="0.55" stopColor="#A7C4FF" />
+            <stop offset="1" stopColor="#C2D7FF" />
+          </linearGradient>
+        </defs>
+        <path
+          fill="url(#hl-marker)"
+          d="M14 22 C 9 16, 18 9, 34 10 C 90 6, 150 9, 210 7 C 270 5, 330 8, 380 9 C 393 9, 398 17, 391 23 C 396 30, 394 40, 384 44 C 330 50, 262 47, 200 51 C 140 55, 80 50, 28 53 C 12 54, 5 46, 11 39 C 4 33, 6 26, 14 22 Z"
+        />
+        <path
+          fill="#AFC8FB"
+          opacity="0.45"
+          d="M40 30 C 120 26, 230 27, 360 24 C 368 24, 370 31, 362 32 C 250 36, 140 35, 42 38 C 34 38, 33 31, 40 30 Z"
+        />
+      </motion.svg>
+      {/* sketched underline: one confident stroke with a small return flick */}
+      <svg
+        aria-hidden
+        viewBox="0 0 400 30"
+        preserveAspectRatio="none"
+        className="absolute -left-[0.04em] -bottom-[0.14em] h-[0.2em] w-[calc(100%+0.1em)] overflow-visible"
+      >
+        <motion.path
+          d="M6 18 C 80 10, 190 9, 300 11 C 340 12, 372 14, 394 10 M 330 20 C 352 18, 372 19, 388 17"
+          fill="none"
+          stroke="#2463D1"
+          strokeWidth="3.2"
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+          {...draw(0.9, 0.8)}
+        />
+      </svg>
+      <span className="relative">{children}</span>
+    </span>
+  );
+};
 
 // ===== Hero =====
 /** Hero brand film (made with Higgsfield Higgsedit). Silent autoplay loop; static poster for reduced motion. */
