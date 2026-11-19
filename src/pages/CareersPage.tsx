@@ -1,4 +1,5 @@
-import { ArrowRight, BrainCircuit, Bug, Code, Headphones, Layers, PenTool, Rocket, Sparkles, TrendingUp, type LucideIcon } from "lucide-react";
+import { ArrowRight, BrainCircuit, Bug, Check, Code, Headphones, Layers, PenTool, Rocket, Sparkles, TrendingUp, type LucideIcon } from "lucide-react";
+import officePhoto from "@/assets/careers/office.jpg";
 import { aiHelpers, products } from "@/data/products";
 import { CONTACT_EMAIL, Container, FaqList, Footer, Navbar, SectionHeader, useHashScroll } from "@/components/site";
 
@@ -9,36 +10,50 @@ const applyHref = (team: string) =>
 const GENERAL_APPLY = applyHref("Open application");
 
 // ===== Hero =====
-const WorkCard = () => (
-  <div className="relative">
-    <div aria-hidden className="absolute -inset-6 rounded-[32px] bg-[radial-gradient(60%_60%_at_50%_45%,hsl(216_90%_94%),transparent)]" />
-    <div className="relative rounded-2xl border border-border bg-white p-6 shadow-[0_24px_48px_-28px_rgba(15,23,42,0.35)] md:p-8">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold">What you'd work on</p>
-        <span className="text-xs text-muted-foreground">{products.length} products · {aiHelpers.length} AI helpers</span>
+/** Workspace photo with a floating "What you'd work on" card (product logos) over its corner. */
+const HeroVisual = () => (
+  <div className="relative sm:pb-12">
+    <div aria-hidden className="absolute -inset-6 rounded-[36px] bg-[radial-gradient(60%_60%_at_60%_40%,hsl(216_90%_94%),transparent)]" />
+    <div className="relative overflow-hidden rounded-2xl border border-border shadow-[0_30px_60px_-30px_rgba(15,23,42,0.45)]">
+      <img
+        src={officePhoto}
+        alt="Bright, modern office with plants and natural light"
+        width={1200}
+        height={900}
+        className="block aspect-[4/3] w-full object-cover"
+      />
+    </div>
+    <div className="relative mx-4 -mt-10 rounded-xl border border-border bg-white/95 p-4 shadow-[0_20px_40px_-20px_rgba(15,23,42,0.45)] backdrop-blur sm:absolute sm:bottom-0 sm:left-6 sm:mx-0 sm:mt-0 sm:w-[360px] sm:p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+        <p className="whitespace-nowrap text-sm font-semibold">What you'd work on</p>
+        <span className="text-xs text-muted-foreground">
+          {products.length} products · {aiHelpers.length} AI helpers
+        </span>
       </div>
-      <div className="mt-6 grid grid-cols-4 gap-3">
-        {products.map((p) => (
-          <div
+      <div className="mt-3 flex items-center gap-1.5">
+        {products.slice(0, 6).map((p, i) => (
+          <span
             key={p.slug}
             title={p.name}
-            className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border border-border bg-white"
+            className={`h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-white ${i >= 4 ? "hidden sm:inline-flex" : "inline-flex"}`}
           >
-            <img src={p.logo} alt="" className="h-7 w-7 object-contain" />
-            <span className="hidden sm:block max-w-full truncate px-1 text-[10px] font-medium text-muted-foreground">{p.name}</span>
-          </div>
+            <img src={p.logo} alt={p.name} className="h-5 w-5 object-contain" />
+          </span>
         ))}
+        <span className="inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-lg bg-accent px-2.5 text-xs font-medium text-primary">
+          <span className="sm:hidden">+{products.length - 4} more</span>
+          <span className="hidden sm:inline">+{products.length - 6} more</span>
+        </span>
       </div>
-      <div className="mt-6 flex items-center gap-3 rounded-xl bg-accent p-4">
-        <Sparkles className="h-5 w-5 shrink-0 text-primary" strokeWidth={1.75} />
-        <p className="text-sm">
-          <span className="font-medium">AI in every product:</span>{" "}
-          <span className="text-muted-foreground">OCR billing, voice to billing, risk scoring and more.</span>
-        </p>
-      </div>
+      <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+        <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary" strokeWidth={1.75} />
+        AI in every product: OCR billing, voice to billing, risk scoring
+      </p>
     </div>
   </div>
 );
+
+const heroFacts = ["Hiring year-round", "Freshers and interns welcome", "No degree required", "Teams serving 14+ countries"];
 
 const Hero = () => (
   <section className="relative overflow-x-clip border-b border-border">
@@ -56,20 +71,30 @@ const Hero = () => (
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <a
             href="#teams"
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-primary-foreground shadow-[0_8px_20px_-8px_rgba(36,99,209,0.6)] hover:bg-primary/90"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-primary px-6 text-[15px] font-medium text-primary-foreground shadow-[0_8px_20px_-8px_rgba(36,99,209,0.6)] hover:bg-primary/90"
           >
             See open teams <ArrowRight className="h-4 w-4" />
           </a>
           <a
             href={GENERAL_APPLY}
-            className="inline-flex h-11 items-center justify-center rounded-md border border-border bg-white px-6 text-sm font-medium hover:bg-muted"
+            className="inline-flex h-12 items-center justify-center rounded-md border border-border bg-white px-6 text-[15px] font-medium hover:bg-muted"
           >
             Send us your work
           </a>
         </div>
+        <ul className="mt-8 grid gap-x-6 gap-y-2.5 text-sm text-foreground sm:grid-cols-2">
+          {heroFacts.map((f) => (
+            <li key={f} className="flex items-center gap-2">
+              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent text-primary">
+                <Check className="h-3 w-3" strokeWidth={2.5} />
+              </span>
+              {f}
+            </li>
+          ))}
+        </ul>
       </div>
       <div className="lg:col-span-6">
-        <WorkCard />
+        <HeroVisual />
       </div>
     </Container>
   </section>
@@ -94,7 +119,7 @@ const Reasons = () => (
               <Icon className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <h3 className="mt-4 text-base font-semibold">{title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
+            <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{desc}</p>
           </div>
         ))}
       </div>
@@ -123,7 +148,7 @@ const Principles = () => (
           <li key={p.title} className="border-t border-border pt-5">
             <span className="text-sm font-semibold text-primary">{String(i + 1).padStart(2, "0")}</span>
             <h3 className="mt-2 text-base font-semibold">{p.title}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{p.desc}</p>
+            <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">{p.desc}</p>
           </li>
         ))}
       </ol>
@@ -156,7 +181,7 @@ const Teams = () => (
               <Icon className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <h3 className="mt-4 text-base font-semibold">{name}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
+            <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{desc}</p>
             <ul className="mt-4 flex flex-wrap gap-1.5">
               {skills.map((s) => (
                 <li key={s} className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">{s}</li>
@@ -194,7 +219,7 @@ const Process = () => (
               {i < process.length - 1 && <span aria-hidden className="hidden h-px flex-1 bg-border md:block" />}
             </div>
             <h3 className="mt-5 text-base font-semibold">{s.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
+            <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{s.desc}</p>
           </li>
         ))}
       </ol>
@@ -231,7 +256,7 @@ const Closing = () => (
         <h2 className="mx-auto max-w-2xl text-3xl md:text-[44px] font-semibold tracking-[-0.025em] leading-[1.1] text-white text-balance">
           Show us what you've built.
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-base md:text-lg leading-relaxed text-white/80">
+        <p className="mx-auto mt-4 max-w-xl text-base md:text-lg leading-relaxed text-white">
           A repo, a design, a side project, a sales story. Send it over and tell us what you want to build next.
         </p>
         <a
